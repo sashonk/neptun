@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="48" tileheight="48" infinite="0" nextlayerid="6" nextobjectid="69">
+ <tileset firstgid="1" source="walls.tsx"/>
+ <tileset firstgid="5" source="animals.tsx"/>
+ <layer id="2" name="ground" width="30" height="20">
+  <data encoding="csv">
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
+</data>
+ </layer>
+ <layer id="1" name="walls" width="30" height="20">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,
+0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,
+0,0,1,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,
+0,0,1,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,0,0,0,0,0,0,1,
+0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,1,1,0,1,1,1,
+0,0,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,1,
+0,0,1,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,
+0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,1,
+0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,1,
+0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,1,
+0,0,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,0,0,0,0,0,1,
+0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,1,
+0,0,1,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,1,
+0,0,1,0,0,1,0,1,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,1,
+0,0,1,0,0,1,0,0,1,0,0,1,1,1,1,1,1,0,1,0,1,0,1,0,0,0,0,0,1,1,
+0,0,1,0,0,1,1,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,1,1,
+0,0,1,0,1,1,0,0,1,0,0,1,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,1,1,
+0,0,1,1,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,1,1,
+0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1
+</data>
+ </layer>
+ <layer id="5" name="dirt" width="30" height="20">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,0,4,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,4,4,0,0,0,0,0,4,0,4,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,4,4,0,0,0,0,0,0,4,0,4,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,4,4,0,0,0,0,0,0,4,0,4,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,4,4,0,0,0,0,0,0,4,0,4,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,4,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,4,4,0,0,0,0,0,0,4,0,4,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,4,4,0,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,4,4,0,4,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,4,4,4,4,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="3" name="main">
+  <object id="1" name="deathspirit" type="deathspirit" gid="6" x="672" y="672" width="48" height="48">
+   <properties>
+    <property name="attach_controller" type="bool" value="true"/>
+    <property name="chase_camera" type="bool" value="true"/>
+    <property name="has_animations" type="bool" value="true"/>
+    <property name="is_squizable" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="7" type="golem" gid="7" x="144" y="240" width="48" height="48">
+   <properties>
+    <property name="has_animations" type="bool" value="true"/>
+    <property name="is_walking" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="10" type="golem" gid="7" x="672" y="192" width="48" height="48">
+   <properties>
+    <property name="chase_camera" type="bool" value="false"/>
+    <property name="has_animations" type="bool" value="true"/>
+    <property name="is_squizable" type="bool" value="true"/>
+    <property name="is_walking" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="11" type="golem" gid="7" x="1152" y="288" width="48" height="48">
+   <properties>
+    <property name="has_animations" type="bool" value="true"/>
+    <property name="is_walking" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="12" type="golem" gid="7" x="1104" y="768" width="48" height="48">
+   <properties>
+    <property name="has_animations" type="bool" value="true"/>
+    <property name="is_walking" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="13" type="stone" gid="3" x="432" y="336" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+    <property name="on_touch" value="roll"/>
+   </properties>
+  </object>
+  <object id="46" type="stone" gid="3" x="768" y="432" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="47" type="stone" gid="3" x="624" y="336" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="48" type="stone" gid="3" x="528" y="384" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="49" type="stone" gid="3" x="576" y="480" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="50" type="stone" gid="3" x="576" y="336" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="51" type="stone" gid="3" x="672" y="336" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="52" type="stone" gid="3" x="672" y="384" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="53" type="stone" gid="3" x="768" y="336" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="54" type="stone" gid="3" x="768" y="384" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="55" type="stone" gid="3" x="720" y="432" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="56" type="stone" gid="3" x="720" y="336" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="57" type="stone" gid="3" x="720" y="384" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="58" type="stone" gid="3" x="672" y="432" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="59" type="stone" gid="3" x="768" y="480" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="60" type="stone" gid="3" x="624" y="384" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="61" type="stone" gid="3" x="528" y="480" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="62" type="stone" gid="3" x="576" y="432" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="63" type="stone" gid="3" x="624" y="432" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="64" type="stone" gid="3" x="720" y="480" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="65" type="stone" gid="3" x="672" y="480" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="66" type="stone" gid="3" x="624" y="480" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="67" type="stone" gid="3" x="528" y="432" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="68" type="stone" gid="3" x="576" y="384" width="48" height="48">
+   <properties>
+    <property name="can_fall" type="bool" value="true"/>
+    <property name="can_roll" type="bool" value="true"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
