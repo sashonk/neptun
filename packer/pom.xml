@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ru.asocial.games</groupId>
-        <artifactId>mars</artifactId>
+        <artifactId>neptun</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>mars-packer</artifactId>
+    <artifactId>neptun-packer</artifactId>
     <packaging>jar</packaging>
 
-    <name>mars-packer</name>
+    <name>neptun-packer</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

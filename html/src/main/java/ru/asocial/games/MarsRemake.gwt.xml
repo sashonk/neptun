@@ -1,4 +1,4 @@
-<module rename-to='mars'>
+<module rename-to='neptun'>
 	<inherits name='com.badlogic.gdx.backends.gdx_backends_gwt' />
 
 	<source path='core'/>
@@ -6,7 +6,7 @@
 
 	<public path="resources" />
 
-	<entry-point class='ru.asocial.games.html.MarsRemakeHtml'/>
+	<entry-point class='ru.asocial.games.html.NeptunHtml'/>
 	<set-configuration-property name="gdx.assetpath" value="assets" />
 	<set-configuration-property name="gdx.assetoutputpath" value="html/target/webapp" />
 </module>

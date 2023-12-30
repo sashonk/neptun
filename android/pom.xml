@@ -4,13 +4,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>ru.asocial.games</groupId>
-		<artifactId>mars</artifactId>
+		<artifactId>neptun</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>mars-android</artifactId>
+	<artifactId>neptun-android</artifactId>
 	<packaging>apk</packaging>
-	<name>MarsRemake Android</name>
+	<name>Neptun Android</name>
 
 	<properties>
 		<keystore.path>game.keystore</keystore.path>
@@ -23,7 +23,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>ru.asocial.games</groupId>
-			<artifactId>mars-core</artifactId>
+			<artifactId>neptun-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

@@ -4,13 +4,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>ru.asocial.games</groupId>
-		<artifactId>mars</artifactId>
+		<artifactId>neptun</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>mars-core</artifactId>
+	<artifactId>neptun-core</artifactId>
 	<packaging>jar</packaging>
-	<name>MarsRemake Core</name>
+	<name>Neptun Core</name>
 
 	<dependencies>
 		<dependency>

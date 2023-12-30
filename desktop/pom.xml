@@ -4,22 +4,22 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>ru.asocial.games</groupId>
-		<artifactId>mars</artifactId>
+		<artifactId>neptun</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>mars-desktop</artifactId>
+	<artifactId>neptun-desktop</artifactId>
 	<packaging>jar</packaging>
-	<name>MarsRemake desktop</name>
+	<name>Neptun desktop</name>
 
 	<properties>
-		<mainClass>ru.asocial.games.java.MarsRemakeDesktop</mainClass>
+		<mainClass>ru.asocial.games.java.NeptunDesktop</mainClass>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>ru.asocial.games</groupId>
-			<artifactId>mars-core</artifactId>
+			<artifactId>neptun-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

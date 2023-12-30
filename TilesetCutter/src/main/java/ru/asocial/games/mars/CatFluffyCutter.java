@@ -1,4 +1,4 @@
-package ru.asocial.games.mars;
+package ru.asocial.games.neptun;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -11,8 +11,8 @@ public class CatFluffyCutter {
 
     public static void main(String[] argc) throws Exception {
         System.out.println("begin");
-        File srcDir = new File("D:\\work\\mars-temp\\MythologicalAnimals\\12x8");
-        File destDir = new File("D:\\work\\mars-temp\\MythologicalAnimals\\12x8_proc");
+        File srcDir = new File("D:\\work\\neptun-temp\\MythologicalAnimals\\12x8");
+        File destDir = new File("D:\\work\\neptun-temp\\MythologicalAnimals\\12x8_proc");
         destDir.mkdirs();
         for (File imgFile : srcDir.listFiles()) {
             File dir = new File(destDir, imgFile.getName().replace(".png", ""));

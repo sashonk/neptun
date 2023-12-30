@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project name="maven-antrun-" default="main"  >
 <target name="main">
-  <java fork="true" classname="ru.asocial.games.java.MarsRemakeDesktop" classpathref="maven.test.classpath">
+  <java fork="true" classname="ru.asocial.games.java.NeptunDesktop" classpathref="maven.test.classpath">
     <sysproperty value="target/natives" key="java.library.path"/>
   </java>
 </target>

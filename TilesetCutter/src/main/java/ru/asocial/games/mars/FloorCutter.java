@@ -1,4 +1,4 @@
-package ru.asocial.games.mars;
+package ru.asocial.games.neptun;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -7,13 +7,13 @@ import java.io.File;
 
 public class FloorCutter {
 
-    static File destDir = new File("D:\\WORK\\mars-temp\\floor");
+    static File destDir = new File("D:\\WORK\\neptun-temp\\floor");
 
     static int i = 0;
 
     public static void main(String[] argc) throws Exception {
         System.out.println("begin");
-        File srcImg = new File("D:\\WORK\\mars-temp\\5e5c7177e81329cc32c35b4d977196c6.jpg");
+        File srcImg = new File("D:\\WORK\\neptun-temp\\5e5c7177e81329cc32c35b4d977196c6.jpg");
         destDir.mkdirs();
         BufferedImage image = ImageIO.read(srcImg);
 

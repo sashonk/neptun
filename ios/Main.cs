@@ -9,7 +9,7 @@ namespace ru.asocial.games
 {
 	[Register ("AppDelegate")]
 	public partial class AppDelegate : IOSApplication {
-		public AppDelegate () : base(new MarsRemake(), createConfig()) {}
+		public AppDelegate () : base(new Neptun(), createConfig()) {}
 
 		internal static IOSApplicationConfiguration createConfig () {
 			IOSApplicationConfiguration config = new IOSApplicationConfiguration();
