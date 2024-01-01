@@ -1,5 +1,6 @@
 package ru.asocial.games.core.behaviours;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.Entity;
@@ -30,7 +31,6 @@ public class FallingBehavior extends MovingBehavior{
         }
 
         entity.putProperty(PropertyKeys.IS_FALLING, false);
-
         return null;
     }
 }

@@ -1,5 +1,6 @@
 package ru.asocial.games.core.behaviours;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
@@ -86,11 +87,15 @@ public abstract class MovingBehavior implements Behaviour {
                 prevY = (int) entity.getY() / (int) entity.getHeight();
                 Vector2 moveTo = new Vector2(entity.getX() + nextMove.x * entity.getWidth(), entity.getY() + nextMove.y * entity.getHeight());
                 entity.putProperty(PropertyKeys.MOVING_TO, moveTo);
-                matrix.free(prevX, prevY);
+                Entity prev = matrix.get(prevX, prevY);
+                if (prev == entity) {
+                    matrix.free(prevX, prevY);
+                }
                 Action moveToAction = Actions.sequence(Actions.moveTo(entity.getX() + nextMove.x * entity.getWidth(), entity.getY() + nextMove.y * entity.getHeight(), Config.SINGLE_MOVE_DURATION), new Action() {
                     @Override
                     public boolean act(float delta) {
                         entity.putProperty(PropertyKeys.IS_MOVING, false);
+                        entity.putProperty(PropertyKeys.IS_ROLLING, false);
                         return true;
                     }
                 });

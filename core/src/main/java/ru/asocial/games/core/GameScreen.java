@@ -2,6 +2,7 @@ package ru.asocial.games.core;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayer;
@@ -30,13 +31,13 @@ public class GameScreen extends BaseScreen {
 
 
     public GameScreen(IGame game) {
-        super(game, 1000, 500);
+        super(game, 1000, 600);
     }
 
     public void render(float delta) {
         if (!mapLoaded) {
-            TmxMapLoader loader = new TmxMapLoader();
-            map = loader.load("map/neptun.tmx");
+            TmxMapLoader loader = new TmxMapLoader(new AbsoluteFileHandleResolver());
+            map = loader.load("D:\\work\\tiled\\neptun\\neptun.tmx");
 
             MapLayer objectLayer = map.getLayers().get("main");
             TiledMapTileLayer wallsLayer = (TiledMapTileLayer) map.getLayers().get("walls");
