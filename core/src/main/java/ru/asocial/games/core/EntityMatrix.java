@@ -8,13 +8,15 @@ import java.util.Arrays;
 
 public class EntityMatrix extends Actor {
 
-    private Entity[][] entities;
+    private final Entity[][] entities;
 
 
     private TextureRegion dbg_tex;
 
-    public EntityMatrix(int width, int height, ResourcesManager resourcesManager) {
+    private boolean renderDebug;
 
+    public EntityMatrix(int width, int height, ResourcesManager resourcesManager, boolean renderDebug) {
+        this.renderDebug = renderDebug;
         entities = new Entity[width][];
         for (int i = 0; i< width; i++) {
             entities[i] = new Entity[height];
@@ -32,6 +34,12 @@ public class EntityMatrix extends Actor {
         entities[i][j] = null;
     }
 
+    public void freeAll() {
+        for (Entity[] entity : entities) {
+            Arrays.fill(entity, null);
+        }
+    }
+
     public Entity get(int i, int j) {
         return entities[i][j];
     }
@@ -42,12 +50,15 @@ public class EntityMatrix extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlfa) {
-        for (int i = 0; i < entities.length; i++) {
-            for (int j = 0; j< entities[i].length; j++) {
-                if (entities[i][j] != null) {
-                    batch.draw(dbg_tex, i * 48, j * 48, 48, 48);
+        if (renderDebug) {
+            for (int i = 0; i < entities.length; i++) {
+                for (int j = 0; j< entities[i].length; j++) {
+                    if (entities[i][j] != null) {
+                        batch.draw(dbg_tex, i * 48, j * 48, 48, 48);
+                    }
                 }
             }
         }
+
     }
 }

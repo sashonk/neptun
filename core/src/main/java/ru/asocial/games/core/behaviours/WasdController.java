@@ -41,7 +41,7 @@ public class WasdController extends MovingBehavior{
             }
 
             Entity e = getObjectAtCell(cx, cy);
-            if (move.y == 0 && e != null && e.getProperty(PropertyKeys.CAN_ROLL, Boolean.class) && !e.getPropertyOrDefault(PropertyKeys.IS_ROLLING, Boolean.class, false)) {
+            if (move.y == 0 && e != null && e.getPropertyOrDefault(PropertyKeys.CAN_ROLL, Boolean.class, false) && !e.getPropertyOrDefault(PropertyKeys.IS_ROLLING, Boolean.class, false)) {
                 Vector2 behind = move.cpy().scl(2);
                 int bx = (int) (entity.getX() / entity.getWidth() + behind.x);
                 int by = (int) (entity.getY() / entity.getHeight() + behind.y);

@@ -25,12 +25,9 @@ public class EntityFactory {
 
     private Stage stage;
 
-    private EntityMatrix matrix;
-
-    public EntityFactory(ResourcesManager resourcesManager, Layers layers, Stage stage, EntityMatrix matrix) {
+    public EntityFactory(ResourcesManager resourcesManager, Layers layers, Stage stage) {
         this.resourcesManager = resourcesManager;
         this.stage = stage;
-        this.matrix = matrix;
         this.layers = layers;
     }
 
