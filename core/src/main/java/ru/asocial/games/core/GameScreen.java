@@ -14,13 +14,9 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import ru.asocial.games.core.behaviours.MovingBehavior;
 
-import java.net.InetAddress;
 import java.util.Iterator;
-import java.util.Properties;
 
 public class GameScreen extends BaseScreen {
 

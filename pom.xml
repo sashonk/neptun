@@ -178,6 +178,12 @@
 				<module>ios</module>
 			</modules>
 		</profile>
+		<profile>
+			<id>kafka</id>
+			<modules>
+				<module>kafka</module>
+			</modules>
+		</profile>
 	</profiles>
 
 	<modules>

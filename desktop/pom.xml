@@ -107,4 +107,16 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>kafka</id>
+			<dependencies>
+				<dependency>
+					<groupId>ru.asocial.games</groupId>
+					<artifactId>neptun-kafka</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 </project>

@@ -4,17 +4,11 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Screen;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.PartitionInfo;
-import org.apache.kafka.common.serialization.StringSerializer;
 
-import java.net.InetAddress;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.Future;
+import java.util.ServiceLoader;
 
 public class Neptun extends Game implements IGame{
 
@@ -24,7 +18,6 @@ public class Neptun extends Game implements IGame{
 
 	private ResourcesManager resourcesManager;
 
-	private KafkaProducer<String, String> kafkaProducer;
 
 	private IMessagingService messagingService;
 
@@ -54,31 +47,17 @@ public class Neptun extends Game implements IGame{
 
 		setScreen(new SplashScreen(this));
 
-		try {
-			Properties config = new Properties();
-			config.put("client.id", InetAddress.getLocalHost().getHostName());
-			config.put("bootstrap.servers", "localhost:9093");
-			kafkaProducer = new KafkaProducer<>(config, new StringSerializer(), new StringSerializer());
-
-			List<PartitionInfo> partitions = kafkaProducer.partitionsFor("neptun-events");
-			for (PartitionInfo partitionInfo : partitions) {
-				System.out.println("Partition: " + partitionInfo.partition() + partitionInfo.topic());
+		ServiceLoader<IMessagingService> serviceLoader = ServiceLoader.load(IMessagingService.class);
+		Iterator<IMessagingService> messagingServiceIterator = serviceLoader.iterator();
+		messagingService = messagingServiceIterator.hasNext() ? messagingServiceIterator.next() : new IMessagingService() {
+			@Override
+			public void writeMessage(String tag, String message) {
+				System.out.println(tag + ":" + message);
 			}
 
-		}
-		catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-
-		messagingService = (tag, message) -> {
-			try {
-				ProducerRecord<String, String> record = new ProducerRecord<>("neptun-events", 0, tag, message);
-				kafkaProducer.send(record);
-
-
-			}
-			catch (Exception ex) {
-				ex.printStackTrace();
+			@Override
+			public void close() {
+				//NOOP
 			}
 		};
 	}
@@ -93,7 +72,7 @@ public class Neptun extends Game implements IGame{
 			screen.dispose();
 		}
 
-		kafkaProducer.close();
+		messagingService.close();
 
 		Gdx.app.exit();
 	}
