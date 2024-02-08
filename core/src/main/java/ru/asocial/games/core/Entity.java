@@ -18,6 +18,10 @@ public class Entity extends Actor {
         return behaviours.stream().anyMatch(behaviour -> cls.isAssignableFrom(behaviour.getClass()));
     }
 
+    public <T extends Behaviour> Optional<T> findBehavior(Class<T> behaviorClass) {
+        return (Optional<T>) behaviours.stream().filter(behaviour -> behaviorClass.isAssignableFrom(behaviour.getClass())).findFirst();
+    }
+
     public String getType() {
         return (String) properties.get("type");
     }

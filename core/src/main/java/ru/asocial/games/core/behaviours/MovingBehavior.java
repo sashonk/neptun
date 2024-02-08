@@ -5,8 +5,13 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.*;
+import ru.asocial.games.core.events.MoveEvent;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class MovingBehavior implements Behaviour {
 
@@ -96,11 +101,13 @@ public abstract class MovingBehavior implements Behaviour {
                     public boolean act(float delta) {
                         entity.putProperty(PropertyKeys.IS_MOVING, false);
                         entity.putProperty(PropertyKeys.IS_ROLLING, false);
+                        entity.fire(new MoveEvent("finish"));
                         return true;
                     }
                 });
                 entity.addAction(moveToAction);
                 matrix.take((int) entity.getX() / (int) entity.getWidth()  + (int)nextMove.x,(int) entity.getY() / (int) entity.getHeight() + (int) nextMove.y, entity);
+                entity.fire(new MoveEvent("start"));
             }
         }
     }

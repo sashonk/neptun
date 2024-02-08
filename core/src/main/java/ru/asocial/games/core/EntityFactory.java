@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import ru.asocial.games.core.behaviours.*;
+import ru.asocial.games.core.events.EntityEvent;
 import ru.asocial.games.core.renderers.AnimatedEntityRenderer;
 import ru.asocial.games.core.renderers.DefaultEntityRenderer;
 import ru.asocial.games.core.renderers.RollingStoneRenderer;
@@ -25,10 +26,13 @@ public class EntityFactory {
 
     private Stage stage;
 
-    public EntityFactory(ResourcesManager resourcesManager, Layers layers, Stage stage) {
+    private IMessagingService messagingService;
+
+    public EntityFactory(ResourcesManager resourcesManager, Layers layers, Stage stage, IMessagingService messagingService) {
         this.resourcesManager = resourcesManager;
         this.stage = stage;
         this.layers = layers;
+        this.messagingService = messagingService;
     }
 
     public Entity create(MapObject object) {
@@ -80,6 +84,7 @@ public class EntityFactory {
             entity.putProperty(PropertyKeys.ORIENTATION, EntityOrientation.FRONT.name());
             entity.setRenderer(new AnimatedEntityRenderer());
         }
+
         if (object.getProperties().get(PropertyKeys.IS_WALKING, false, Boolean.class)) {
             entity.addBehaviour(new WalkingBehaviour(layers));
             entity.putProperty(WalkingBehaviour.PropertyKey_direction, new Vector2(1, 0));
@@ -106,6 +111,15 @@ public class EntityFactory {
             entity.addBehaviour(new RollingBehavior(layers));
             entity.setRenderer(new RollingStoneRenderer());
         }
+
+        entity.addListener(event -> {
+            if (event instanceof EntityEvent) {
+                messagingService.writeMessage(event.getClass().getName(), event.toString());
+                return true;
+            }
+            return false;
+        });
+
         return entity;
     }
 }

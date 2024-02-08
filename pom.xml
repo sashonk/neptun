@@ -14,6 +14,8 @@
 		<gwt.version>2.6.0</gwt.version>
 		<gwt.maven.version>2.6.0</gwt.maven.version>
 		<gdx.version>1.11.0</gdx.version>
+		<kafka.version>3.6.1</kafka.version>
+		<slf4j.version>1.7.32</slf4j.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -22,6 +24,21 @@
 				<groupId>com.badlogicgames.gdx</groupId>
 				<artifactId>gdx</artifactId>
 				<version>${gdx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-clients</artifactId>
+				<version>${kafka.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-simple</artifactId>
+				<version>${slf4j.version}</version>
 			</dependency>
 
 			<!-- android-specific dependencies -->

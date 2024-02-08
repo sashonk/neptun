@@ -14,9 +14,13 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import ru.asocial.games.core.behaviours.MovingBehavior;
 
+import java.net.InetAddress;
 import java.util.Iterator;
+import java.util.Properties;
 
 public class GameScreen extends BaseScreen {
 
@@ -31,9 +35,12 @@ public class GameScreen extends BaseScreen {
 
     private EntityMatrix entityMatrix;
 
+    private IMessagingService messagingService;
 
     public GameScreen(IGame game) {
         super(game, 1000, 600);
+
+        this.messagingService = game.getMessagingService();
     }
 
     public void restart() {
@@ -59,6 +66,7 @@ public class GameScreen extends BaseScreen {
     }
 
     public void setup() {
+
         TmxMapLoader loader = new TmxMapLoader(new AbsoluteFileHandleResolver());
         map = loader.load("D:\\work\\tiled\\neptun\\neptun.tmx");
 
@@ -70,11 +78,10 @@ public class GameScreen extends BaseScreen {
 
         renderer = new OrthogonalTiledMapRenderer(map, 1f);
 
-
         Iterator<MapObject> objectIterator = objectLayer.getObjects().iterator();
 
         entityMatrix = new EntityMatrix(50, 50, getResourcesManager(), false);
-        EntityFactory entityFactory = new EntityFactory(getResourcesManager(), layers, getStage());
+        EntityFactory entityFactory = new EntityFactory(getResourcesManager(), layers, getStage(), messagingService);
 
         MovingBehavior.setObjectMatrix(entityMatrix);
 

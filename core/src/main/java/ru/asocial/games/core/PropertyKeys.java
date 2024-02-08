@@ -30,7 +30,11 @@ public class PropertyKeys {
 
     public static final String ROLLING_DIRECTION = "rolling_direction";
 
-    public static final String ON_TOUCH = "on_touch";
     public static final String IS_SQUIZABLE = "is_squizable";
+
+
+    public static final String ON_TOUCH = "on_touch";
+
+    public static final String ON_MOVE = "on_move";
 
 }
