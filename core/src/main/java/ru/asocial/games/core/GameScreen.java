@@ -61,6 +61,10 @@ public class GameScreen extends BaseScreen {
         mapLoaded = false;
     }
 
+    public void generateMap() {
+
+    }
+
     public void setup() {
 
         TmxMapLoader loader = new TmxMapLoader(new AbsoluteFileHandleResolver());

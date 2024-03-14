@@ -1,4 +1,4 @@
-package ru.asocial.games.neptun;
+package ru.asocial.games.mars;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
