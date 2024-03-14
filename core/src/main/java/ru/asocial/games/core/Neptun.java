@@ -19,7 +19,7 @@ public class Neptun extends Game implements IGame{
 	private ResourcesManager resourcesManager;
 
 
-	private IMessagingService messagingService;
+	private IMessageService messagingService;
 
 	@Override
 	public ResourcesManager getResourcesManager() {
@@ -47,9 +47,9 @@ public class Neptun extends Game implements IGame{
 
 		setScreen(new SplashScreen(this));
 
-		ServiceLoader<IMessagingService> serviceLoader = ServiceLoader.load(IMessagingService.class);
-		Iterator<IMessagingService> messagingServiceIterator = serviceLoader.iterator();
-		messagingService = messagingServiceIterator.hasNext() ? messagingServiceIterator.next() : new IMessagingService() {
+		ServiceLoader<IMessageService> serviceLoader = ServiceLoader.load(IMessageService.class);
+		Iterator<IMessageService> messagingServiceIterator = serviceLoader.iterator();
+		messagingService = messagingServiceIterator.hasNext() ? messagingServiceIterator.next() : new IMessageService() {
 			@Override
 			public void writeMessage(String tag, String message) {
 				System.out.println(tag + ":" + message);
@@ -85,7 +85,7 @@ public class Neptun extends Game implements IGame{
 	}
 
 	@Override
-	public IMessagingService getMessagingService() {
+	public IMessageService getMessagingService() {
 		return messagingService;
 	}
 

@@ -4,13 +4,13 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.serialization.StringSerializer;
-import ru.asocial.games.core.IMessagingService;
+import ru.asocial.games.core.IMessageService;
 
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Properties;
 
-public class KafkaMessagingService implements IMessagingService {
+public class KafkaMessagingService implements IMessageService {
 
     private KafkaProducer kafkaProducer;
 
@@ -25,7 +25,6 @@ public class KafkaMessagingService implements IMessagingService {
             for (PartitionInfo partitionInfo : partitions) {
                 System.out.println("Partition: " + partitionInfo.partition() + partitionInfo.topic());
             }
-
         }
         catch (Exception ex) {
             throw new RuntimeException(ex);

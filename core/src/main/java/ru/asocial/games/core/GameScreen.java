@@ -31,7 +31,7 @@ public class GameScreen extends BaseScreen {
 
     private EntityMatrix entityMatrix;
 
-    private IMessagingService messagingService;
+    private IMessageService messagingService;
 
     public GameScreen(IGame game) {
         super(game, 1000, 600);

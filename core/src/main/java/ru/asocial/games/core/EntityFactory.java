@@ -26,9 +26,9 @@ public class EntityFactory {
 
     private Stage stage;
 
-    private IMessagingService messagingService;
+    private IMessageService messagingService;
 
-    public EntityFactory(ResourcesManager resourcesManager, Layers layers, Stage stage, IMessagingService messagingService) {
+    public EntityFactory(ResourcesManager resourcesManager, Layers layers, Stage stage, IMessageService messagingService) {
         this.resourcesManager = resourcesManager;
         this.stage = stage;
         this.layers = layers;

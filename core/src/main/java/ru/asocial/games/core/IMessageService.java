@@ -1,6 +1,6 @@
 package ru.asocial.games.core;
 
-public interface IMessagingService {
+public interface IMessageService {
 
     void writeMessage(String tag, String message);
 

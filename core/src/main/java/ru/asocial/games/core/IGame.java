@@ -7,5 +7,5 @@ public interface IGame {
 
     void onLoad();
 
-    IMessagingService getMessagingService();
+    IMessageService getMessagingService();
 }
