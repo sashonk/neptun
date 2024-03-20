@@ -2,19 +2,20 @@ package ru.asocial.games.core;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import ru.asocial.games.core.behaviours.EnemyBehavior;
 import ru.asocial.games.core.behaviours.MovingBehavior;
+import ru.asocial.games.core.dungeon.MapGenerator;
+import ru.asocial.games.core.events.RestartEvent;
 
 import java.util.Iterator;
 
@@ -22,7 +23,7 @@ public class GameScreen extends BaseScreen {
 
     private boolean mapLoaded;
 
-    private TiledMapRenderer renderer;
+    private OrthoCachedTiledMapRenderer renderer;
 
     private TiledMap map;
 
@@ -30,6 +31,8 @@ public class GameScreen extends BaseScreen {
     private EntityPanel entityPanel;
 
     private EntityMatrix entityMatrix;
+
+    private long lastSeed;
 
     private IMessageService messagingService;
 
@@ -39,9 +42,9 @@ public class GameScreen extends BaseScreen {
         this.messagingService = game.getMessagingService();
     }
 
-    public void restart() {
+    public void restart(boolean useSameDungFile) {
         clear();
-        setup();
+        setup(useSameDungFile);
     }
 
     public void clear() {
@@ -49,6 +52,7 @@ public class GameScreen extends BaseScreen {
             entityMatrix.freeAll();
         }
         getStage().clear();
+        getStage().getCamera().position.set(0, 0, 0);
         if (map != null) {
             map.dispose();
         }
@@ -61,29 +65,42 @@ public class GameScreen extends BaseScreen {
         mapLoaded = false;
     }
 
-    public void generateMap() {
-
+    private void createMapFromDungeonFile(boolean useSameDungeonFile) {
+        MapGenerator mapGenerator = new MapGenerator(false);
+        map = mapGenerator.generateMap(useSameDungeonFile, getResourcesManager().getSkin());
     }
 
-    public void setup() {
+    private void createMapFromTmx() {
+        TmxMapLoader loader = new TmxMapLoader();
+        map = loader.load("map/neptun.tmx");
+    }
 
-        TmxMapLoader loader = new TmxMapLoader(new AbsoluteFileHandleResolver());
-        map = loader.load("D:\\work\\tiled\\neptun\\neptun.tmx");
+    public void setup(boolean useSameDungeonFile) {
 
-        MapLayer objectLayer = map.getLayers().get("main");
+        createMapFromDungeonFile(useSameDungeonFile);
+
+        //MapLayer objectLayer = map.getLayers().get("walls");
         TiledMapTileLayer wallsLayer = (TiledMapTileLayer) map.getLayers().get("walls");
         TiledMapTileLayer dirtLayer = (TiledMapTileLayer) map.getLayers().get("dirt");
 
-        Layers layers = new Layers(wallsLayer, objectLayer, dirtLayer);
+        Layers layers = new Layers(wallsLayer, wallsLayer, dirtLayer);
 
-        renderer = new OrthogonalTiledMapRenderer(map, 1f);
+        renderer = new OrthoCachedTiledMapRenderer(map, 1f);
 
-        Iterator<MapObject> objectIterator = objectLayer.getObjects().iterator();
+        Iterator<MapObject> objectIterator = wallsLayer.getObjects().iterator();
 
-        entityMatrix = new EntityMatrix(50, 50, getResourcesManager(), false);
+        entityMatrix = new EntityMatrix(200, 200, getResourcesManager(), false);
         EntityFactory entityFactory = new EntityFactory(getResourcesManager(), layers, getStage(), messagingService);
 
         MovingBehavior.setObjectMatrix(entityMatrix);
+        MovingBehavior.setTileLayerChangedListener(new MovingBehavior.TileLayerChangedListener() {
+            @Override
+            public void onTileLayerChanged() {
+                renderer.invalidateCache();
+            }
+        });
+
+        EnemyBehavior.setMatrix(entityMatrix);
 
         while (objectIterator.hasNext()) {
             MapObject object = objectIterator.next();
@@ -101,6 +118,20 @@ public class GameScreen extends BaseScreen {
         entityPanel.setPosition(300, 300);
 
         getStage().getRoot().addListener(new InputListener(){
+
+            public boolean scrolled (InputEvent event, float x, float y, float amountX, float amountY) {
+                if (amountY > 0) {
+                    Vector3 pos = getStage().getCamera().position;
+                    getStage().getCamera().translate(pos.x, pos.y, pos.z + 0.1f);
+                    return true;
+                }
+                else if (amountY < 0){
+                    Vector3 pos = getStage().getCamera().position;
+                    getStage().getCamera().translate(pos.x, pos.y, pos.z - 0.1f);
+                    return false;
+                }
+                return false;
+            }
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 
                 if (button == Input.Buttons.LEFT) {
@@ -138,8 +169,30 @@ public class GameScreen extends BaseScreen {
         getStage().addListener(new InputListener(){
             public boolean keyDown (InputEvent event, int keycode) {
                 if (keycode == Input.Keys.F2) {
-                    restart();
+                    restart(true);
                     return true;
+                }
+                return false;
+            }
+        });
+        getStage().addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                if (event instanceof RestartEvent) {
+                    RestartEvent restartEvent = (RestartEvent) event;
+                    Entity player = restartEvent.getPlayer();
+                    player.addAction(Actions.removeActor());
+                    int px = (int) player.getX() / (int) player.getWidth();
+                    int py = (int) player.getY() / (int) player.getHeight();
+                    entityMatrix.free(px, py);
+                    Action delay = Actions.delay(1, new Action() {
+                        @Override
+                        public boolean act(float delta) {
+                            GameScreen.this.restart(!((RestartEvent) event).isNextLvl());
+                            return true;
+                        }
+                    });
+                    getStage().addAction(delay);
                 }
                 return false;
             }
@@ -152,16 +205,18 @@ public class GameScreen extends BaseScreen {
 
     public void render(float delta) {
         if (!mapLoaded) {
-            setup();
+            setup(false);
         } else {
             Gdx.gl.glClearColor(0, 0, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+            getStage().act();
             getStage().getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             renderer.setView((OrthographicCamera) getStage().getCamera());
+
             renderer.render();
 
-            getStage().act();
+            //getStage().setC
             getStage().draw();
 
             hud.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

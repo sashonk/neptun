@@ -1,4 +1,4 @@
-package ru.asocial.games.mars;
+package ru.asocial.games.neptun;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -6,37 +6,41 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-public class CatFluffyCutter {
+public class DoorCutter {
 
 
     public static void main(String[] argc) throws Exception {
         System.out.println("begin");
-        File srcDir = new File("D:\\work\\neptun-temp\\MythologicalAnimals\\12x8");
-        File destDir = new File("D:\\work\\neptun-temp\\MythologicalAnimals\\12x8_proc");
+        File srcDir = new File("D:\\work\\neptun-temp\\doors\\in");
+        File destDir = new File("D:\\work\\neptun-temp\\doors\\out");
         destDir.mkdirs();
+
         for (File imgFile : srcDir.listFiles()) {
             File dir = new File(destDir, imgFile.getName().replace(".png", ""));
             destDir.mkdirs();
 
             BufferedImage image = ImageIO.read(imgFile);
-            int tileWidth = 48, tileHeight = 48;
+            int tileWidth = 64, tileHeight = 64;
             int tileSetWidth = 12 * tileWidth;
             int tileSetHeight = 8 * tileHeight;
             int tileSubSetWidth = 3 * tileWidth;
             int tileSubSetHeight = 4 * tileHeight;
             int d = 0;
-            for (int j = 0; j < tileSetHeight; j+=tileSubSetHeight) {
-                for (int i = 0; i < tileSetWidth; i+=tileSubSetWidth) {
-                    File destSubDir = new File(dir,  Integer.toString(d++));
-                    destSubDir.mkdirs();
-                    LinkedList<String> positions = new LinkedList<>(Arrays.asList("front","left", "right", "back")) ;
-                    for (int y = 0; y < tileSubSetHeight; y+=tileHeight) {
-                        String pos = positions.poll();
-                        int k = 0;
-                        for (int x = 0; x < tileSubSetWidth; x+=tileWidth) {
-                            processImage(image, x + i, y + j, tileWidth, tileHeight, pos + "_" + k++, destSubDir);
-                        }
-                    }
+            for (int j = 0; j < tileSetWidth; j+=tileWidth) {
+                File destSubDir = new File(dir,  Integer.toString(d++));
+                destSubDir.mkdirs();
+                int k = 0;
+                for (int i = 0; i < tileSubSetHeight; i+=tileHeight) {
+                    processImage(image, j , i, tileWidth, tileHeight, "door_"+ k++, destSubDir);
+                }
+            }
+
+            for (int j = 0; j < tileSetWidth; j+=tileWidth) {
+                File destSubDir = new File(dir,  Integer.toString(d++));
+                destSubDir.mkdirs();
+                int k = 0;
+                for (int i = tileSetHeight / 2; i < tileSetHeight; i+=tileHeight) {
+                    processImage(image, j , i, tileWidth, tileHeight, "door_"+ k++, destSubDir);
                 }
             }
         }

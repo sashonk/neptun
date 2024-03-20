@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import ru.asocial.games.core.Entity;
 import ru.asocial.games.core.Layers;
 import ru.asocial.games.core.PropertyKeys;
+import ru.asocial.games.core.events.RestartEvent;
 
 public class WasdController extends MovingBehavior{
 
@@ -41,17 +42,22 @@ public class WasdController extends MovingBehavior{
             }
 
             Entity e = getObjectAtCell(cx, cy);
-            if (move.y == 0 && e != null && e.getPropertyOrDefault(PropertyKeys.CAN_ROLL, Boolean.class, false) && !e.getPropertyOrDefault(PropertyKeys.IS_ROLLING, Boolean.class, false)) {
-                Vector2 behind = move.cpy().scl(2);
-                int bx = (int) (entity.getX() / entity.getWidth() + behind.x);
-                int by = (int) (entity.getY() / entity.getHeight() + behind.y);
-                if (isCellFree(bx, by)) {
-                    e.putProperty(PropertyKeys.IS_ROLLING, true);
-                    e.putProperty(PropertyKeys.ROLLING_DIRECTION, move.x == 1 ? "right" : "left");
-                    //entity.addAction(Actions.);
-                    return move.cpy();
+            if (e != null) {
+                if ("exit".equals(e.getProperty(PropertyKeys.TYPE, String.class))) {
+                    e.getStage().getRoot().fire(new RestartEvent(entity, true));
                 }
 
+                if (move.y == 0 && e.getPropertyOrDefault(PropertyKeys.CAN_ROLL, Boolean.class, false) && !e.getPropertyOrDefault(PropertyKeys.IS_ROLLING, Boolean.class, false)) {
+                    Vector2 behind = move.cpy().scl(2);
+                    int bx = (int) (entity.getX() / entity.getWidth() + behind.x);
+                    int by = (int) (entity.getY() / entity.getHeight() + behind.y);
+                    if (isCellFree(bx, by)) {
+                        e.putProperty(PropertyKeys.IS_ROLLING, true);
+                        e.putProperty(PropertyKeys.ROLLING_DIRECTION, move.x == 1 ? "right" : "left");
+                        //entity.addAction(Actions.);
+                        return move.cpy();
+                    }
+                }
             }
         }
 

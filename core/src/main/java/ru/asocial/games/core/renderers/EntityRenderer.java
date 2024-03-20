@@ -5,5 +5,5 @@ import ru.asocial.games.core.Entity;
 
 public interface EntityRenderer {
 
-    void draw(Entity entity, Batch batch, float parentAlpha);
+    void render(Entity entity, Batch batch, float parentAlpha);
 }

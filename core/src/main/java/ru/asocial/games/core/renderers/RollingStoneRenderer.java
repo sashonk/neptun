@@ -10,7 +10,7 @@ import ru.asocial.games.core.PropertyKeys;
 
 public class RollingStoneRenderer implements EntityRenderer{
     @Override
-    public void draw(Entity entity, Batch batch, float parentAlpha) {
+    public void render(Entity entity, Batch batch, float parentAlpha) {
         TextureRegion region = entity.getProperty(PropertyKeys.TEXTURE_REGION, TextureRegion.class);
 
         float stateTime = entity.getPropertyOrDefault(PropertyKeys.ANIMATION_STATE_TIME, Float.class, 0f);

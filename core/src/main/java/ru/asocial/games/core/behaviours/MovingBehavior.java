@@ -1,17 +1,12 @@
 package ru.asocial.games.core.behaviours;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.*;
-import ru.asocial.games.core.events.MoveEvent;
-
-import java.util.LinkedList;
-import java.util.List;
 
 public abstract class MovingBehavior implements Behaviour {
 
@@ -20,11 +15,21 @@ public abstract class MovingBehavior implements Behaviour {
     private final MapLayer objectLayer;
 
     private static EntityMatrix matrix;
+    private static TileLayerChangedListener tileLayerChangedListener;
 
     private int prevX, prevY;
 
+
     public static void setObjectMatrix(EntityMatrix m) {
         matrix = m;
+    }
+
+    public static void setTileLayerChangedListener(TileLayerChangedListener listener) {
+        tileLayerChangedListener = listener;
+    }
+
+    public interface TileLayerChangedListener {
+        void onTileLayerChanged();
     }
 
     protected TiledMapTileLayer getWallsLayer() {
@@ -53,6 +58,10 @@ public abstract class MovingBehavior implements Behaviour {
 
     protected void removeDirtAtCell(int cellX, int cellY) {
         dirtLayer.setCell(cellX, cellY, null);
+        if (tileLayerChangedListener != null) {
+            tileLayerChangedListener.onTileLayerChanged();
+        }
+
     }
 
     protected void freeObjectAtCell(Entity entity, Vector2 dir) {
@@ -96,18 +105,35 @@ public abstract class MovingBehavior implements Behaviour {
                 if (prev == entity) {
                     matrix.free(prevX, prevY);
                 }
-                Action moveToAction = Actions.sequence(Actions.moveTo(entity.getX() + nextMove.x * entity.getWidth(), entity.getY() + nextMove.y * entity.getHeight(), Config.SINGLE_MOVE_DURATION), new Action() {
+                Action moveToAction  = Actions.sequence(Actions.moveTo(entity.getX() + nextMove.x * entity.getWidth(), entity.getY() + nextMove.y * entity.getHeight(), Config.SINGLE_MOVE_DURATION, Interpolation.linear), new Action() {
                     @Override
                     public boolean act(float delta) {
                         entity.putProperty(PropertyKeys.IS_MOVING, false);
                         entity.putProperty(PropertyKeys.IS_ROLLING, false);
-                        entity.fire(new MoveEvent("finish"));
+                       // entity.fire(new MoveEvent("finish"));
+
+                        // MovingBehavior.this.act( entity, delta);
+
+                       // MovingBehavior.this.act( entity, delta);
+
                         return true;
                     }
                 });
-                entity.addAction(moveToAction);
+
+                Float delay = entity.getProperty("delay", Float.class);
+                if (delay != null && entity.getProperty(PropertyKeys.IS_FALLING, Boolean.class) && !entity.getProperty(PropertyKeys.IS_ROLLING, Boolean.class)) {
+                    entity.addAction(Actions.delay(delay, moveToAction));
+                    entity.putProperty("delay", null);
+                }
+                else {
+                    entity.addAction(moveToAction);
+                }
                 matrix.take((int) entity.getX() / (int) entity.getWidth()  + (int)nextMove.x,(int) entity.getY() / (int) entity.getHeight() + (int) nextMove.y, entity);
-                entity.fire(new MoveEvent("start"));
+                //entity.act(delta);
+                //moveToAction.act(delta);
+                //entity.fire(new MoveEvent("start"));
+                //.act(delta);
+
             }
         }
     }

@@ -84,6 +84,9 @@ public class EntityFactory {
             entity.putProperty(PropertyKeys.ORIENTATION, EntityOrientation.FRONT.name());
             entity.setRenderer(new AnimatedEntityRenderer());
         }
+        if (object.getProperties().get(PropertyKeys.IS_ENEMY, false, Boolean.class)) {
+            entity.addBehaviour(new EnemyBehavior());
+        }
 
         if (object.getProperties().get(PropertyKeys.IS_WALKING, false, Boolean.class)) {
             entity.addBehaviour(new WalkingBehaviour(layers));
@@ -119,6 +122,8 @@ public class EntityFactory {
             }
             return false;
         });
+
+        object.getProperties().put("entity", entity);
 
         return entity;
     }

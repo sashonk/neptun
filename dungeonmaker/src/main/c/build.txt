@@ -1,0 +1,2 @@
+g++ -c -IC:\WORK\jdk-21\include -IC:\WORK\jdk-21\include\win32 .\ru_asocial_games_neptun_dungeonmaker_DungeonMaker.cpp -o .\ru_asocial_games_neptun_dungeonmaker_DungeonMaker.o
+g++ -shared -o dmaker.dll .\DungeonMaker.cpp .\ru_asocial_games_neptun_dungeonmaker_DungeonMaker.o -Wl,--add-stdcall-alias

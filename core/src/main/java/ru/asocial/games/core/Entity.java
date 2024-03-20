@@ -34,6 +34,10 @@ public class Entity extends Actor {
         this.renderer = renderer;
     }
 
+    public EntityRenderer getRenderer() {
+        return renderer;
+    }
+
     public void addBehaviour(Behaviour behaviour) {
         behaviours.add(behaviour);
     }
@@ -41,7 +45,7 @@ public class Entity extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha){
 
-        renderer.draw(this, batch, parentAlpha);
+        renderer.render(this, batch, parentAlpha);
     }
 
     @Override

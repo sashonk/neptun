@@ -9,6 +9,8 @@ public class PropertyKeys {
 
     public static final String HAS_ANIMATIONS = "has_animations";
 
+    public static final String HAS_ORIENTATIONS = "has_orientations";
+
     public static final String IS_MOVING = "is_moving";
 
     public static final String MOVING_TO = "moving_to";
@@ -36,5 +38,7 @@ public class PropertyKeys {
     public static final String ON_TOUCH = "on_touch";
 
     public static final String ON_MOVE = "on_move";
+
+    public static final String IS_ENEMY = "is_enemy";
 
 }

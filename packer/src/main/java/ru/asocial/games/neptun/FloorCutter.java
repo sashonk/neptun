@@ -1,11 +1,11 @@
-package ru.asocial.games.mars;
+package ru.asocial.games.neptun;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class TilesetCutter {
+public class FloorCutter {
 
     static File destDir = new File("D:\\WORK\\neptun-temp\\floor");
 

@@ -7,7 +7,7 @@ import ru.asocial.games.core.PropertyKeys;
 
 public class DefaultEntityRenderer implements EntityRenderer{
     @Override
-    public void draw(Entity entity, Batch batch, float parentAlpha) {
+    public void render(Entity entity, Batch batch, float parentAlpha) {
         TextureRegion region = entity.getProperty(PropertyKeys.TEXTURE_REGION, TextureRegion.class);
 
         batch.draw(region, entity.getX(), entity.getY(), entity.getWidth(), entity.getHeight());

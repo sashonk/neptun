@@ -189,7 +189,7 @@
 	<modules>
 		<module>core</module>
 		<module>packer</module>
-        <module>TilesetCutter</module>
 		<module>admin</module>
+		<module>dungeonmaker</module>
 	</modules>
 </project>

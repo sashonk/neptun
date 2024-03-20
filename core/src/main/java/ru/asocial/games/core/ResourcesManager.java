@@ -32,7 +32,7 @@ public class ResourcesManager {
     void init() {
         Gdx.app.debug(this.getClass().getName(), "initializing");
 
-       skin = new Skin();
+        skin = new Skin();
 
         BitmapFont bitmapFont = manager.get("fonts/calibri24.fnt");
         Label.LabelStyle defaultLabelStyle = new Label.LabelStyle();
