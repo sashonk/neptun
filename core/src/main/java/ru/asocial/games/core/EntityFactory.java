@@ -98,7 +98,7 @@ public class EntityFactory {
         }
 
         if (object.getProperties().get(PropertyKeys.ATTACH_CONTROLLER, false, Boolean.class)) {
-            entity.addBehaviour(new WasdController(layers));
+            entity.addBehaviour(new PlayerBehavior(layers));
         }
 
         boolean canFall = object.getProperties().get(PropertyKeys.CAN_FALL, false, Boolean.class);

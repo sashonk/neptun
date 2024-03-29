@@ -13,25 +13,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import ru.asocial.games.core.PropertyKeys;
-import ru.asocial.games.core.astar.AStar;
-import ru.asocial.games.core.astar.Node;
-import ru.asocial.games.neptun.dungeonmaker.DungeonMaker;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 public class MapGenerator {
 
-    public MapGenerator(boolean generateRandomMaps) {
-        this.generateRandomMaps = generateRandomMaps;
-    }
-
-    private static long lastSeed = 1;
+    private static long level = 1;
 
     private boolean deathSpiritPlaced;
 
@@ -39,93 +30,48 @@ public class MapGenerator {
 
     private int x;
 
-    private boolean generateRandomMaps;
-
-    public TiledMap generateMap(boolean useSameDungeonFile, Skin skin) {
-        int count = 5;
-        while (count > 0) {
-            DungeonMaker dmaker = new DungeonMaker();
-            TiledMap tiledMap = new TiledMap();
+    public TiledMap generateMap(boolean next, Skin skin) {
+        TiledMap tiledMap = new TiledMap();
 /*            MapLayer mainLayer = new MapGroupLayer();
             mainLayer.setName("main");*/
-            TiledMapTileLayer dirtLayer = new TiledMapTileLayer(200, 200, 48, 48);
-            dirtLayer.setName("dirt");
-            TiledMapTileLayer wallLayer = new TiledMapTileLayer(200, 200, 48, 48);
-            wallLayer.setName("walls");
-            wallLayer.setVisible(true);
-            tiledMap.getLayers().add(wallLayer);
-            //tiledMap.getLayers().add(mainLayer);
-            tiledMap.getLayers().add(dirtLayer);
+        TiledMapTileLayer dirtLayer = new TiledMapTileLayer(200, 200, 48, 48);
+        dirtLayer.setName("dirt");
+        TiledMapTileLayer wallLayer = new TiledMapTileLayer(200, 200, 48, 48);
+        wallLayer.setName("walls");
+        wallLayer.setVisible(true);
+        tiledMap.getLayers().add(wallLayer);
+        tiledMap.getLayers().add(dirtLayer);
+        if (next) {
+            level++;
+        }
+        Random rnd = new Random(2);
 
+        BufferedReader br = null;
+        try {
+            FileHandle dungFile = Gdx.files.internal(String.format("dungeons/%d.txt", level));
+            br = dungFile.reader(1024);
+            int width = 48, height = 48;
+            List<String> lines = br.lines().collect(Collectors.toList());
+            int mapHeight = lines.size();
+            int mapWidth = lines.get(0).split(",").length;
 
-            if (!useSameDungeonFile) {
-                lastSeed++;
-            }
-            Random rnd = new Random(lastSeed);
+            lines.forEach(line -> processLine(line, width, height, mapWidth, mapHeight, wallLayer, dirtLayer, skin, rnd));
 
-            BufferedReader br = null;
-            try {
-                if (generateRandomMaps) {
-                    String designFileName = "C:\\Users\\user\\Downloads\\dmaker\\dungeonmaker2_0WinExe\\design";
-                    String dungeonFileName = "D:\\work\\dungeon.txt";
-                    File dungeonFile = new File(dungeonFileName);
-                    if (!useSameDungeonFile) {
-                        dungeonFile.delete();
-                        try {
-                            if (!dungeonFile.createNewFile()) {
-                                throw new GdxRuntimeException("can't create file: " + dungeonFile.getPath());
-                            }
-                        }
-                        catch (Exception exc) {
-                            throw new GdxRuntimeException("can't create file: " + dungeonFile.getPath(), exc);
-                        }
-                        dmaker.generateDungeon(designFileName, dungeonFileName);
-                        br = Files.newBufferedReader(dungeonFile.toPath());
-                    }
-                }
-                else {
-                    FileHandle dungFile = Gdx.files.internal("dungeons/1.txt");
-                    br = dungFile.reader(1024);
-                }
-
-
-                int width = 48, height = 48;
-                List<String> lines = br.lines().collect(Collectors.toList());
-                int mapHeight = lines.size();
-                int mapWidth = lines.get(0).split(",").length;
-
-                Node initialNode = new Node(0, 50);
-                Node finalNode = new Node(149, 50);
-
-                //AStar aStar = new AStar(mapHeight, mapWidth, initialNode, finalNode);
-
-                lines.forEach(line -> processLine(line, width, height, mapWidth, mapHeight, wallLayer, dirtLayer, skin, rnd));
-
-/*
-                if (aStar.findPath().isEmpty()) {
-                    count--;
-                    continue;
-                }
-*/
-
-                return tiledMap;
-            }
-            catch (Exception ex) {
-                throw new GdxRuntimeException(ex);
-            }
-            finally {
-                if (br != null) {
-                    try {
-                        br.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            return tiledMap;
+        }
+        catch (Exception ex) {
+            throw new GdxRuntimeException(ex);
+        }
+        finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
-
-        throw new GdxRuntimeException("failed to create playable map");
-    };
+    }
 
     void processLine(String line, int width, int height, int mapWidth, int mapHeight, TiledMapTileLayer wallLayer, TiledMapTileLayer dirtLayer, Skin skin, Random rnd) {
         String[] types = line.split(",");
@@ -206,17 +152,17 @@ public class MapGenerator {
                     wallLayer.setCell(cx, cy, cell);
                 }
 
-                if (!deathSpiritPlaced && y < 10 && x > 10) {
+                if (!deathSpiritPlaced && (y < 10 && x > 10 || y > 10 && x < 10)) {
                     Array<TextureRegion> regionArray = skin.getRegions("deathspirit/front");
                     TiledMapTile tile = new StaticTiledMapTile(regionArray.get(0));
                     TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
-                    fillBaseProperties(o, x, y + 3, width, height, mapHeight);
+                    fillBaseProperties(o, x, y  + 3 , width, height, mapHeight);
                     fillDeathSpiritProps(o);
                     deathSpiritPlaced = true;
                     wallLayer.getObjects().add(o);
                 }
 
-                if (!exitPlaced && mapWidth - y < 10 && x > 10) {
+                if (!exitPlaced && (mapWidth - y < 10 && x > 10 || mapHeight - x < 10 && y > 10)) {
                     Array<TextureRegion> regionArray = skin.getRegions("doors/19/door");
                     Array<StaticTiledMapTile> tileArray = new Array<>();
                     regionArray.forEach(region -> tileArray.add(new StaticTiledMapTile(region)));
@@ -241,6 +187,7 @@ public class MapGenerator {
     }
 
     void fillDeathSpiritProps(TiledMapTileMapObject o) {
+        o.setName("deathspirit");
         o.getProperties().put("type", "deathspirit");
         o.getProperties().put("name", "deathspirit");
         o.getProperties().put("attach_controller",  true);

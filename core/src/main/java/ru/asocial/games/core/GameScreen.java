@@ -42,9 +42,9 @@ public class GameScreen extends BaseScreen {
         this.messagingService = game.getMessagingService();
     }
 
-    public void restart(boolean useSameDungFile) {
+    public void restart(boolean nextLevel) {
         clear();
-        setup(useSameDungFile);
+        setup(nextLevel);
     }
 
     public void clear() {
@@ -65,9 +65,9 @@ public class GameScreen extends BaseScreen {
         mapLoaded = false;
     }
 
-    private void createMapFromDungeonFile(boolean useSameDungeonFile) {
-        MapGenerator mapGenerator = new MapGenerator(false);
-        map = mapGenerator.generateMap(useSameDungeonFile, getResourcesManager().getSkin());
+    private void createMapFromDungeonFile(boolean next) {
+        MapGenerator mapGenerator = new MapGenerator();
+        map = mapGenerator.generateMap(next, getResourcesManager().getSkin());
     }
 
     private void createMapFromTmx() {
@@ -75,9 +75,9 @@ public class GameScreen extends BaseScreen {
         map = loader.load("map/neptun.tmx");
     }
 
-    public void setup(boolean useSameDungeonFile) {
+    public void setup(boolean nextLevel) {
 
-        createMapFromDungeonFile(useSameDungeonFile);
+        createMapFromDungeonFile(nextLevel);
 
         //MapLayer objectLayer = map.getLayers().get("walls");
         TiledMapTileLayer wallsLayer = (TiledMapTileLayer) map.getLayers().get("walls");
@@ -117,7 +117,12 @@ public class GameScreen extends BaseScreen {
         entityPanel = new EntityPanel(getResourcesManager().getSkin());
         entityPanel.setPosition(300, 300);
 
-        getStage().getRoot().addListener(new InputListener(){
+        Actor player = getStage().getRoot().findActor("deathspirit");
+        if (player != null) {
+            getStage().getCamera().position.set(player.getX(), player.getY(), 1);
+        }
+
+        getStage().getRoot().addListener(new InputListener() {
 
             public boolean scrolled (InputEvent event, float x, float y, float amountX, float amountY) {
                 if (amountY > 0) {
@@ -166,11 +171,23 @@ public class GameScreen extends BaseScreen {
             }
         });
 
-        getStage().addListener(new InputListener(){
+        getStage().addListener(new InputListener() {
             public boolean keyDown (InputEvent event, int keycode) {
                 if (keycode == Input.Keys.F2) {
-                    restart(true);
+                    restart(false);
                     return true;
+                }
+                else if (keycode == Input.Keys.LEFT) {
+                    getStage().getCamera().translate(-10, 0, 0);
+                }
+                else if (keycode == Input.Keys.RIGHT) {
+                    getStage().getCamera().translate(10, 0, 0);
+                }
+                else if (keycode == Input.Keys.UP) {
+                    getStage().getCamera().translate(0, 10, 0);
+                }
+                else if (keycode == Input.Keys.DOWN) {
+                    getStage().getCamera().translate(0, -10, 0);
                 }
                 return false;
             }
@@ -188,7 +205,7 @@ public class GameScreen extends BaseScreen {
                     Action delay = Actions.delay(1, new Action() {
                         @Override
                         public boolean act(float delta) {
-                            GameScreen.this.restart(!((RestartEvent) event).isNextLvl());
+                            GameScreen.this.restart(((RestartEvent) event).isNextLvl());
                             return true;
                         }
                     });

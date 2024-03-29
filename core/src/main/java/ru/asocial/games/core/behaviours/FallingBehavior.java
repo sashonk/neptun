@@ -25,7 +25,7 @@ public class FallingBehavior extends MovingBehavior{
             return move;
         }
 
-        entity.putProperty("delay", 0.04f);
+        entity.putProperty("delay", 0.1f);
 
         Entity e = getObjectAtCell(entity, move);
         if (e != null && entity.getPropertyOrDefault(PropertyKeys.IS_FALLING, Boolean.class, false) &&

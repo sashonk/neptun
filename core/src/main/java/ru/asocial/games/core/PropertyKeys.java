@@ -41,4 +41,5 @@ public class PropertyKeys {
 
     public static final String IS_ENEMY = "is_enemy";
 
+
 }

@@ -2,47 +2,60 @@ package ru.asocial.games.core.behaviours;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.math.Vector2;
-import ru.asocial.games.core.Entity;
-import ru.asocial.games.core.Layers;
-import ru.asocial.games.core.PropertyKeys;
+import ru.asocial.games.core.*;
 import ru.asocial.games.core.events.RestartEvent;
 
-public class WasdController extends MovingBehavior{
+public class PlayerBehavior extends MovingBehavior{
 
-    public WasdController(Layers layers) {
+    public PlayerBehavior(Layers layers) {
         super(layers);
     }
 
     @Override
     protected Vector2 findNextMove(Entity entity) {
         Vector2 move = null;
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+        Preferences keyboardKeys = Gdx.app.getPreferences("keyboard");
+        int keyUp = keyboardKeys.getInteger("up");
+        int keyDown = keyboardKeys.getInteger("down");
+        int keyLeft = keyboardKeys.getInteger("left");
+        int keyRight = keyboardKeys.getInteger("right");
+        int keyAction = keyboardKeys.getInteger("action");
+        boolean isActing = Gdx.input.isKeyPressed(keyAction);
+        if (Gdx.input.isKeyPressed(keyUp)) {
             move = new Vector2(0, 1);
         }
-        else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+        else if (Gdx.input.isKeyPressed(keyDown)) {
             move = new Vector2(0, -1);
         }
-        else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        else if (Gdx.input.isKeyPressed(keyRight)) {
             move = new Vector2(1, 0);
         }
-        else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        else if (Gdx.input.isKeyPressed(keyLeft)) {
             move = new Vector2(-1, 0);
         }
         if (move != null) {
+            EntityMove direction = EntityMove.fromVector2(move);
+            EntityOrientation orientation = EntityOrientation.fromMoveDirection(direction);
+            entity.putProperty(PropertyKeys.ORIENTATION, orientation.name());
+
             int cx = (int) (entity.getX() / entity.getWidth() + move.x);
             int cy = (int) (entity.getY() / entity.getHeight() + move.y);
-            if (isCellFree(cx, cy)) {
+
+            if (isCellFree(cx, cy) && !isActing) {
                 return move.cpy();
             }
 
             if (isDirtAtCell(cx, cy)) {
                 removeDirtAtCell(cx, cy);
-                return move.cpy();
+                if (!isActing) {
+                    return move.cpy();
+                }
             }
 
             Entity e = getObjectAtCell(cx, cy);
-            if (e != null) {
+            if (e != null && !isActing) {
                 if ("exit".equals(e.getProperty(PropertyKeys.TYPE, String.class))) {
                     e.getStage().getRoot().fire(new RestartEvent(entity, true));
                 }
@@ -60,7 +73,7 @@ public class WasdController extends MovingBehavior{
                 }
             }
         }
-
+        entity.putProperty("delay", 0.1f);
         return null;
     }
 }

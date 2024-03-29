@@ -101,18 +101,28 @@ public abstract class MovingBehavior implements Behaviour {
                 prevY = (int) entity.getY() / (int) entity.getHeight();
                 Vector2 moveTo = new Vector2(entity.getX() + nextMove.x * entity.getWidth(), entity.getY() + nextMove.y * entity.getHeight());
                 entity.putProperty(PropertyKeys.MOVING_TO, moveTo);
-                Entity prev = matrix.get(prevX, prevY);
-                if (prev == entity) {
-                    matrix.free(prevX, prevY);
+
+                Float delay = entity.getProperty("delay", Float.class);
+                if (delay == null) {
+                    Entity prev = matrix.get(prevX, prevY);
+                    if (prev == entity) {
+                        matrix.free(prevX, prevY);
+                    }
                 }
+
                 Action moveToAction  = Actions.sequence(Actions.moveTo(entity.getX() + nextMove.x * entity.getWidth(), entity.getY() + nextMove.y * entity.getHeight(), Config.SINGLE_MOVE_DURATION, Interpolation.linear), new Action() {
                     @Override
                     public boolean act(float delta) {
                         entity.putProperty(PropertyKeys.IS_MOVING, false);
                         entity.putProperty(PropertyKeys.IS_ROLLING, false);
                        // entity.fire(new MoveEvent("finish"));
-
-                        // MovingBehavior.this.act( entity, delta);
+                        if (delay != null) {
+                            Entity prev = matrix.get(prevX, prevY);
+                            if (prev == entity) {
+                                matrix.free(prevX, prevY);
+                            }
+                        }
+                         MovingBehavior.this.act( entity, delta);
 
                        // MovingBehavior.this.act( entity, delta);
 
@@ -120,14 +130,16 @@ public abstract class MovingBehavior implements Behaviour {
                     }
                 });
 
-                Float delay = entity.getProperty("delay", Float.class);
-                if (delay != null && entity.getProperty(PropertyKeys.IS_FALLING, Boolean.class) && !entity.getProperty(PropertyKeys.IS_ROLLING, Boolean.class)) {
+                entity.addAction(moveToAction);
+                entity.putProperty("delay", null);
+
+/*                if (delay != null && entity.getProperty(PropertyKeys.IS_FALLING, Boolean.class) && !entity.getProperty(PropertyKeys.IS_ROLLING, Boolean.class)) {
                     entity.addAction(Actions.delay(delay, moveToAction));
                     entity.putProperty("delay", null);
                 }
                 else {
                     entity.addAction(moveToAction);
-                }
+                }*/
                 matrix.take((int) entity.getX() / (int) entity.getWidth()  + (int)nextMove.x,(int) entity.getY() / (int) entity.getHeight() + (int) nextMove.y, entity);
                 //entity.act(delta);
                 //moveToAction.act(delta);
