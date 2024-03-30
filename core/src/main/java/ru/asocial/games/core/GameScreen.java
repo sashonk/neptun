@@ -89,7 +89,7 @@ public class GameScreen extends BaseScreen {
 
         Iterator<MapObject> objectIterator = wallsLayer.getObjects().iterator();
 
-        entityMatrix = new EntityMatrix(200, 200, getResourcesManager(), false);
+        entityMatrix = new EntityMatrix(200, 200, getResourcesManager(), true);
         EntityFactory entityFactory = new EntityFactory(getResourcesManager(), layers, getStage(), messagingService);
 
         MovingBehavior.setObjectMatrix(entityMatrix);

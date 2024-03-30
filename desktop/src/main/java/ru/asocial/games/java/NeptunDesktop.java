@@ -23,5 +23,14 @@ public class NeptunDesktop {
 		keyboard.putInteger("down", Input.Keys.S);
 		keyboard.putInteger("right", Input.Keys.D);
 		keyboard.putInteger("action", Input.Keys.SPACE);
+
+		Preferences neptun = Gdx.app.getPreferences("neptun");
+		//neptun.putBoolean("replay", true);
+		if (args.length > 0) {
+			if ("replay".equals(args[0])) {
+				neptun.putBoolean("replay", true);
+			}
+		}
+
 	}
 }

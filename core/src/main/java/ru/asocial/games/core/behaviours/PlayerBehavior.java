@@ -1,7 +1,6 @@
 package ru.asocial.games.core.behaviours;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.math.Vector2;
 import ru.asocial.games.core.*;
@@ -13,16 +12,14 @@ public class PlayerBehavior extends MovingBehavior{
         super(layers);
     }
 
-    @Override
-    protected Vector2 findNextMove(Entity entity) {
+    protected Vector2 doFindNextMove() {
         Vector2 move = null;
         Preferences keyboardKeys = Gdx.app.getPreferences("keyboard");
         int keyUp = keyboardKeys.getInteger("up");
         int keyDown = keyboardKeys.getInteger("down");
         int keyLeft = keyboardKeys.getInteger("left");
         int keyRight = keyboardKeys.getInteger("right");
-        int keyAction = keyboardKeys.getInteger("action");
-        boolean isActing = Gdx.input.isKeyPressed(keyAction);
+
         if (Gdx.input.isKeyPressed(keyUp)) {
             move = new Vector2(0, 1);
         }
@@ -35,7 +32,17 @@ public class PlayerBehavior extends MovingBehavior{
         else if (Gdx.input.isKeyPressed(keyLeft)) {
             move = new Vector2(-1, 0);
         }
+
+        return move;
+    }
+
+    @Override
+    protected Vector2 findNextMove(Entity entity) {
+        Vector2 move = doFindNextMove();
         if (move != null) {
+            Preferences keyboardKeys = Gdx.app.getPreferences("keyboard");
+            int keyAction = keyboardKeys.getInteger("action");
+            boolean isActing = Gdx.input.isKeyPressed(keyAction);
             EntityMove direction = EntityMove.fromVector2(move);
             EntityOrientation orientation = EntityOrientation.fromMoveDirection(direction);
             entity.putProperty(PropertyKeys.ORIENTATION, orientation.name());
@@ -73,7 +80,6 @@ public class PlayerBehavior extends MovingBehavior{
                 }
             }
         }
-        entity.putProperty("delay", 0.1f);
         return null;
     }
 }

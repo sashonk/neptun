@@ -20,12 +20,25 @@ public class FallingBehavior extends MovingBehavior{
         int cx = (int) (entity.getX() / entity.getWidth() + move.x);
         int cy = (int) (entity.getY() / entity.getHeight() + move.y);
         if (isCellFree(cx, cy)) {
+            Float delay = entity.getProperty(PropertyKeys.DELAY, Float.class);
+            if (delay != null) {
+                if (delay <= 0) {
+                    entity.putProperty(PropertyKeys.IS_ROLLING, false);
+                    entity.putProperty(PropertyKeys.IS_FALLING, true);
+                    incrementFallingEntitiesCounter(entity);
+                    return move;
+                }
+
+                entity.putProperty(PropertyKeys.DELAY, delay - Gdx.graphics.getDeltaTime());
+                return null;
+            }
             entity.putProperty(PropertyKeys.IS_ROLLING, false);
             entity.putProperty(PropertyKeys.IS_FALLING, true);
+            incrementFallingEntitiesCounter(entity);
             return move;
         }
 
-        entity.putProperty("delay", 0.1f);
+        entity.putProperty(PropertyKeys.DELAY, 0.1f);
 
         Entity e = getObjectAtCell(entity, move);
         if (e != null && entity.getPropertyOrDefault(PropertyKeys.IS_FALLING, Boolean.class, false) &&
@@ -42,6 +55,7 @@ public class FallingBehavior extends MovingBehavior{
         }
 
         entity.putProperty(PropertyKeys.IS_FALLING, false);
+        decrementFallingEntitiesCounter(entity);
         return null;
     }
 }

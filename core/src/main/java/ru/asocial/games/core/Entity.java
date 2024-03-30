@@ -62,6 +62,10 @@ public class Entity extends Actor {
         properties.put(key, value);
     }
 
+    public void removeProperty(String key) {
+        properties.remove(key);
+    }
+
     public <T> T getProperty(String key, Class<T> cls) {
         Object value = properties.get(key);
         if (value == null) {

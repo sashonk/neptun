@@ -1,5 +1,7 @@
 package ru.asocial.games.core;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
@@ -14,9 +16,9 @@ import ru.asocial.games.core.renderers.AnimatedEntityRenderer;
 import ru.asocial.games.core.renderers.DefaultEntityRenderer;
 import ru.asocial.games.core.renderers.RollingStoneRenderer;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.io.BufferedReader;
+import java.io.File;
+import java.util.*;
 
 public class EntityFactory {
 
@@ -98,7 +100,36 @@ public class EntityFactory {
         }
 
         if (object.getProperties().get(PropertyKeys.ATTACH_CONTROLLER, false, Boolean.class)) {
-            entity.addBehaviour(new PlayerBehavior(layers));
+            boolean replay = Gdx.app.getPreferences("neptun").getBoolean("replay");
+            if (replay) {
+                FileHandle file = Gdx.files.absolute("D:\\work\\moves.txt");
+                BufferedReader br = new BufferedReader(file.reader());
+                List<Vector2> moves = new LinkedList<>();
+                try {
+                    while (true) {
+                        String line = br.readLine();
+                        if (line == null) {
+                            break;
+                        }
+                        Vector2 v = new Vector2();
+                        v.fromString(line);
+                        moves.add(v);
+                    }
+                }
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                ReplayMovesBehavior replayMovesBehavior = new ReplayMovesBehavior(layers, moves);
+                entity.addBehaviour(replayMovesBehavior);
+            }
+            else {
+                PlayerBehavior behavior = new PlayerBehavior(layers);
+                FileHandle file = Gdx.files.absolute("D:\\work\\moves.txt");
+                //file.delete();
+                behavior.setMoveCallback(move -> file.writeString(move.toString() + "\r\n", true));
+                entity.addBehaviour(behavior);
+            }
         }
 
         boolean canFall = object.getProperties().get(PropertyKeys.CAN_FALL, false, Boolean.class);
