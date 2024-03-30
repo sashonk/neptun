@@ -102,7 +102,7 @@ public class EntityFactory {
         if (object.getProperties().get(PropertyKeys.ATTACH_CONTROLLER, false, Boolean.class)) {
             boolean replay = Gdx.app.getPreferences("neptun").getBoolean("replay");
             if (replay) {
-                FileHandle file = Gdx.files.absolute("D:\\work\\moves.txt");
+                FileHandle file = Gdx.files.internal("D:\\work\\nice_moves.txt");
                 BufferedReader br = new BufferedReader(file.reader());
                 List<Vector2> moves = new LinkedList<>();
                 try {
