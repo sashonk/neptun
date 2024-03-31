@@ -1,9 +1,12 @@
 package ru.asocial.games.core.behaviours;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.Entity;
 import ru.asocial.games.core.EntityMatrix;
+import ru.asocial.games.core.EntityMatrixUtils;
 import ru.asocial.games.core.PropertyKeys;
+import ru.asocial.games.core.events.RemoveEntityEvent;
 import ru.asocial.games.core.events.RestartEvent;
 
 import java.util.Arrays;
@@ -32,7 +35,9 @@ public class EnemyBehavior implements Behaviour {
         Arrays.stream(vv).forEach(v -> {
             Entity e = getObjectAtCell(entity, v);
             if (e != null && "deathspirit".equals(e.getProperty(PropertyKeys.TYPE, String.class))) {
-                e.getStage().getRoot().fire(new RestartEvent(e, false));
+                EntityMatrixUtils.freeObject(matrix, e);
+                e.addAction(Actions.removeActor());
+                e.fire(new RemoveEntityEvent());
             }
         });
     }

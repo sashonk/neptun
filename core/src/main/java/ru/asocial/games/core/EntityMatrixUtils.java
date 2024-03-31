@@ -10,6 +10,7 @@ public class EntityMatrixUtils {
 
     public static void freeObject(EntityMatrix matrix, Entity entity) {
         matrix.free((int) entity.getX() / (int) entity.getWidth(),(int) entity.getY() / (int) entity.getHeight());
+
     }
 
     public static Entity getWithOffset(EntityMatrix matrix, Entity center, int offsetX, int offsetY) {

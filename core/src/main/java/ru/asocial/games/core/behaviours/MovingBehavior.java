@@ -85,8 +85,8 @@ public abstract class MovingBehavior implements Behaviour {
         }
     }
 
-    protected void freeObjectAtCell(Entity entity, Vector2 dir) {
-        EntityMatrixUtils.freeObject(matrix, entity, dir);
+    protected void freeObject(Entity entity) {
+        EntityMatrixUtils.freeObject(matrix, entity);
     }
 
     protected void freeObjectAtCell(int cellX, int cellY) {
@@ -111,20 +111,25 @@ public abstract class MovingBehavior implements Behaviour {
     public void act(Entity entity, float delta) {
         this.delta = delta;
         boolean isMoving = entity.getPropertyOrDefault(PropertyKeys.IS_MOVING, Boolean.class, false);
-        if (entity.getParent() == null && isMoving) {
+        if (entity.getParent() == null) {
             //matrix.free(prevX, prevY);
-            Vector2 movingTo = entity.getProperty(PropertyKeys.MOVING_TO, Vector2.class);
-            if (entity == getObjectAtCell((int) (movingTo.x / entity.getWidth()), (int) (movingTo.y / entity.getHeight()))) {
-                freeObjectAtCell((int) (movingTo.x / entity.getWidth()), (int) (movingTo.y / entity.getHeight()));
+            if (isMoving) {
+                Vector2 movingTo = entity.getProperty(PropertyKeys.MOVING_TO, Vector2.class);
+                if (entity == getObjectAtCell((int) (movingTo.x / entity.getWidth()), (int) (movingTo.y / entity.getHeight()))) {
+                    freeObjectAtCell((int) (movingTo.x / entity.getWidth()), (int) (movingTo.y / entity.getHeight()));
+                }
             }
 
             entity.clear();
+            return;
         }
+
         if (!isMoving) {
             Vector2 nextMove = findNextMove(entity);
             if (nextMove != null) {
                 entity.putProperty(PropertyKeys.IS_MOVING, true);
                 EntityMove direction = EntityMove.fromVector2(nextMove);
+                entity.putProperty("next_move", nextMove);
                 EntityOrientation orientation = EntityOrientation.fromMoveDirection(direction);
                 entity.putProperty(PropertyKeys.ORIENTATION, orientation.name());
                 prevX = (int) entity.getX() / (int) entity.getWidth();

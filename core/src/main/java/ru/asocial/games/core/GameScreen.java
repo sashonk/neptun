@@ -5,24 +5,22 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.behaviours.EnemyBehavior;
-import ru.asocial.games.core.behaviours.LimitedLifeTimeBehavior;
 import ru.asocial.games.core.behaviours.MovingBehavior;
 import ru.asocial.games.core.dungeon.MapGenerator;
+import ru.asocial.games.core.events.RemoveEntityEvent;
 import ru.asocial.games.core.events.ExplodeEntityEvent;
 import ru.asocial.games.core.events.RestartEvent;
-import ru.asocial.games.core.renderers.AnimatedEntityRenderer;
 
 import java.util.Iterator;
 
@@ -147,7 +145,7 @@ public class GameScreen extends BaseScreen {
                     if (event.getTarget() instanceof Entity) {
 
                         Entity entity = (Entity) event.getTarget();
-                        entity.putProperty(PropertyKeys.IS_EXPLOSIVE, true);
+                        entity.putProperty("test", true);
                         return true;
                     }
                     return false;
@@ -173,37 +171,10 @@ public class GameScreen extends BaseScreen {
             }
         });
 
-        getStage().addListener(new InputListener() {
-            public boolean keyDown (InputEvent event, int keycode) {
-                if (keycode == Input.Keys.F2) {
-                    restart(false);
-                    return true;
-                }
-                else if (keycode == Input.Keys.LEFT) {
-                    getStage().getCamera().translate(-10, 0, 0);
-                }
-                else if (keycode == Input.Keys.RIGHT) {
-                    getStage().getCamera().translate(10, 0, 0);
-                }
-                else if (keycode == Input.Keys.UP) {
-                    getStage().getCamera().translate(0, 10, 0);
-                }
-                else if (keycode == Input.Keys.DOWN) {
-                    getStage().getCamera().translate(0, -10, 0);
-                }
-                return false;
-            }
-        });
         getStage().addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
                 if (event instanceof RestartEvent) {
-                    RestartEvent restartEvent = (RestartEvent) event;
-                    Entity player = restartEvent.getPlayer();
-                    player.addAction(Actions.removeActor());
-                    int px = (int) player.getX() / (int) player.getWidth();
-                    int py = (int) player.getY() / (int) player.getHeight();
-                    entityMatrix.free(px, py);
                     Action delay = Actions.delay(1, new Action() {
                         @Override
                         public boolean act(float delta) {
@@ -221,11 +192,17 @@ public class GameScreen extends BaseScreen {
                         for (int j = -1; j < 2; j++) {
                             Entity e1 = EntityMatrixUtils.getWithOffset(entityMatrix, explosive, i, j);
                             if (e1 != null) {
-                                if (e1.getPropertyOrDefault(PropertyKeys.IS_EXPLOSIVE, Boolean.class, false) && !e1.getPropertyOrDefault("is_exploding", Boolean.class, false)) {
+                                if (e1.getPropertyOrDefault(PropertyKeys.IS_EXPLOSIVE, Boolean.class, false)
+                                        && !e1.getPropertyOrDefault("is_exploding", Boolean.class, false)) {
                                     e1.fire(new ExplodeEntityEvent());
+                                    continue;
                                 }
+
                                 EntityMatrixUtils.freeObject(entityMatrix, e1);
+
                                 e1.addAction(Actions.removeActor());
+                                e1.fire(new RemoveEntityEvent());
+                                //e1.fire(new RemoveEntityEvent());
                             }
                             else {
                                 if (CellUtils.isDirtAtCell(dirtLayer, explosive, i, j)) {
@@ -240,10 +217,18 @@ public class GameScreen extends BaseScreen {
                         }
                     }
 
-                    explosive.remove();
+                    explosive.addAction(Actions.removeActor());
+                    explosive.fire(new RemoveEntityEvent());
+                    EntityMatrixUtils.freeObject(entityMatrix, explosive);
 
                     if (needInvalidateCache) {
                         renderer.invalidateCache();
+                    }
+                }
+                else if (event instanceof RemoveEntityEvent) {
+                    Entity entity = (Entity) event.getTarget();
+                    if ("deathspirit".equals(entity.getProperty(PropertyKeys.TYPE, String.class)) ) {
+                        getStage().getRoot().fire(new RestartEvent(entity, false));
                     }
                 }
                 return false;

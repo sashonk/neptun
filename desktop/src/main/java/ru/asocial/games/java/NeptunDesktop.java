@@ -21,10 +21,10 @@ public class NeptunDesktop {
 
 
 		Preferences keyboard = Gdx.app.getPreferences("keyboard");
-		keyboard.putInteger("up", Input.Keys.W);
-		keyboard.putInteger("left", Input.Keys.A);
-		keyboard.putInteger("down", Input.Keys.S);
-		keyboard.putInteger("right", Input.Keys.D);
+		keyboard.putInteger("up", Input.Keys.UP);
+		keyboard.putInteger("left", Input.Keys.LEFT);
+		keyboard.putInteger("down", Input.Keys.DOWN);
+		keyboard.putInteger("right", Input.Keys.RIGHT);
 		keyboard.putInteger("action", Input.Keys.SPACE);
 
 		Preferences neptun = Gdx.app.getPreferences("neptun");

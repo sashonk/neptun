@@ -103,6 +103,9 @@ public class MapGenerator {
                         o.getProperties().put("can_roll", true);
                         o.getProperties().put("can_fall", true);
                         o.getProperties().put("type", "stone");
+                        if (rnd.nextBoolean()) {
+                            o.getProperties().put("is_explosive", true);
+                        }
                         wallLayer.getObjects().add(o);
                     }
                 }
@@ -117,6 +120,7 @@ public class MapGenerator {
                         o.getProperties().put("is_squizable",  true);
                         o.getProperties().put("is_walking", true);
                         o.getProperties().put("is_enemy", true);
+                        o.getProperties().put("is_explosive", true);
                         wallLayer.getObjects().add(o);
                     }
                 }
@@ -138,6 +142,24 @@ public class MapGenerator {
                         o.getProperties().put("can_roll", true);
                         o.getProperties().put("can_fall", true);
                         o.getProperties().put("type", "stone");
+                        if (rnd.nextBoolean()) {
+                            o.getProperties().put("is_explosive", true);
+                        }
+                        wallLayer.getObjects().add(o);
+                    }
+                }
+                else {
+                    if (rnd.nextBoolean()) {
+                        Array<TextureRegion> regionArray = skin.getRegions("golem/front");
+                        TiledMapTile tile = new StaticTiledMapTile(regionArray.get(0));
+                        TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
+                        fillBaseProperties(o, x, y, width, height, mapHeight);
+                        o.getProperties().put("type", "golem");
+                        o.getProperties().put("has_animations",  true);
+                        o.getProperties().put("is_squizable",  true);
+                        o.getProperties().put("is_walking", true);
+                        o.getProperties().put("is_enemy", true);
+                        o.getProperties().put("is_explosive", true);
                         wallLayer.getObjects().add(o);
                     }
                 }
