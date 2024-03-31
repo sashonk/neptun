@@ -2,20 +2,27 @@ package ru.asocial.games.core;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.behaviours.EnemyBehavior;
+import ru.asocial.games.core.behaviours.LimitedLifeTimeBehavior;
 import ru.asocial.games.core.behaviours.MovingBehavior;
 import ru.asocial.games.core.dungeon.MapGenerator;
+import ru.asocial.games.core.events.ExplodeEntityEvent;
 import ru.asocial.games.core.events.RestartEvent;
+import ru.asocial.games.core.renderers.AnimatedEntityRenderer;
 
 import java.util.Iterator;
 
@@ -89,16 +96,13 @@ public class GameScreen extends BaseScreen {
 
         Iterator<MapObject> objectIterator = wallsLayer.getObjects().iterator();
 
-        entityMatrix = new EntityMatrix(200, 200, getResourcesManager(), true);
+        Preferences prefs = Gdx.app.getPreferences("neptun");
+        entityMatrix = new EntityMatrix(200, 200, getResourcesManager(), prefs.getBoolean("debug"));
         EntityFactory entityFactory = new EntityFactory(getResourcesManager(), layers, getStage(), messagingService);
 
         MovingBehavior.setObjectMatrix(entityMatrix);
-        MovingBehavior.setTileLayerChangedListener(new MovingBehavior.TileLayerChangedListener() {
-            @Override
-            public void onTileLayerChanged() {
-                renderer.invalidateCache();
-            }
-        });
+        MovingBehavior.TileLayerChangedListener tileLayerChangedListener = () -> renderer.invalidateCache();
+        MovingBehavior.setTileLayerChangedListener(tileLayerChangedListener);
 
         EnemyBehavior.setMatrix(entityMatrix);
 
@@ -141,14 +145,12 @@ public class GameScreen extends BaseScreen {
 
                 if (button == Input.Buttons.LEFT) {
                     if (event.getTarget() instanceof Entity) {
+
                         Entity entity = (Entity) event.getTarget();
-                        String onTouch = entity.getProperty(PropertyKeys.ON_TOUCH, String.class);
-                        if ("roll".equals(onTouch)) {
-                            entity.putProperty(PropertyKeys.IS_ROLLING, true);
-                        }
+                        entity.putProperty(PropertyKeys.IS_EXPLOSIVE, true);
+                        return true;
                     }
-                    System.out.println(event.getTarget());
-                    return true;
+                    return false;
                 }
                 else if (button == Input.Buttons.RIGHT) {
                     if (event.getTarget() instanceof Entity) {
@@ -210,6 +212,39 @@ public class GameScreen extends BaseScreen {
                         }
                     });
                     getStage().addAction(delay);
+                }
+                if (event instanceof ExplodeEntityEvent) {
+                    Entity explosive = (Entity) event.getTarget();
+                    explosive.putProperty("is_exploding", true);
+                    boolean needInvalidateCache = false;
+                    for (int i = -1 ; i < 2; i++) {
+                        for (int j = -1; j < 2; j++) {
+                            Entity e1 = EntityMatrixUtils.getWithOffset(entityMatrix, explosive, i, j);
+                            if (e1 != null) {
+                                if (e1.getPropertyOrDefault(PropertyKeys.IS_EXPLOSIVE, Boolean.class, false) && !e1.getPropertyOrDefault("is_exploding", Boolean.class, false)) {
+                                    e1.fire(new ExplodeEntityEvent());
+                                }
+                                EntityMatrixUtils.freeObject(entityMatrix, e1);
+                                e1.addAction(Actions.removeActor());
+                            }
+                            else {
+                                if (CellUtils.isDirtAtCell(dirtLayer, explosive, i, j)) {
+                                    GridPoint2 cellXY = CellUtils.getCellCoors(explosive, i, j);
+                                    dirtLayer.setCell(cellXY.x, cellXY.y, null);
+                                    needInvalidateCache = true;
+                                }
+                            }
+
+                            Entity explosion = entityFactory.newExplosion(explosive, i, j);
+                            getStage().addActor(explosion);
+                        }
+                    }
+
+                    explosive.remove();
+
+                    if (needInvalidateCache) {
+                        renderer.invalidateCache();
+                    }
                 }
                 return false;
             }

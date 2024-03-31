@@ -2,11 +2,11 @@ package ru.asocial.games.core.behaviours;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.Entity;
 import ru.asocial.games.core.Layers;
 import ru.asocial.games.core.PropertyKeys;
+import ru.asocial.games.core.events.ExplodeEntityEvent;
 import ru.asocial.games.core.events.RestartEvent;
 
 public class FallingBehavior extends MovingBehavior{
@@ -41,16 +41,21 @@ public class FallingBehavior extends MovingBehavior{
         entity.putProperty(PropertyKeys.DELAY, 0.1f);
 
         Entity e = getObjectAtCell(entity, move);
-        if (e != null && entity.getPropertyOrDefault(PropertyKeys.IS_FALLING, Boolean.class, false) &&
-                e.getPropertyOrDefault(PropertyKeys.IS_SQUIZABLE, Boolean.class, false)) {
-            if ("deathspirit".equals(e.getProperty(PropertyKeys.TYPE, String.class)) ) {
-                if (e.getStage() != null) {
-                    e.getStage().getRoot().fire(new RestartEvent(e, false));
-                }
+        if (e != null && entity.getPropertyOrDefault(PropertyKeys.IS_FALLING, Boolean.class, false)) {
+            if (e.getPropertyOrDefault(PropertyKeys.IS_EXPLOSIVE, Boolean.class, false)) {
+                e.fire(new ExplodeEntityEvent());
             }
-            else {
-                e.addAction(Actions.removeActor());
-                freeObjectAtCell(entity, move);
+
+            if (e.getPropertyOrDefault(PropertyKeys.IS_SQUIZABLE, Boolean.class, false)) {
+                if ("deathspirit".equals(e.getProperty(PropertyKeys.TYPE, String.class)) ) {
+                    if (e.getStage() != null) {
+                        e.getStage().getRoot().fire(new RestartEvent(e, false));
+                    }
+                }
+                else {
+                    e.addAction(Actions.removeActor());
+                    freeObjectAtCell(entity, move);
+                }
             }
         }
 

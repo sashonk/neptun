@@ -227,6 +227,61 @@ doors/19/door
   index: 3
 
 images5.png
+size: 1024, 512
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+explosion/explosion
+  rotate: false
+  xy: 2, 188
+  size: 184, 184
+  orig: 184, 184
+  offset: 0, 0
+  index: 0
+explosion/explosion
+  rotate: false
+  xy: 2, 2
+  size: 184, 184
+  orig: 184, 184
+  offset: 0, 0
+  index: 1
+explosion/explosion
+  rotate: false
+  xy: 188, 188
+  size: 184, 184
+  orig: 184, 184
+  offset: 0, 0
+  index: 2
+explosion/explosion
+  rotate: false
+  xy: 188, 2
+  size: 184, 184
+  orig: 184, 184
+  offset: 0, 0
+  index: 3
+explosion/explosion
+  rotate: false
+  xy: 374, 188
+  size: 184, 184
+  orig: 184, 184
+  offset: 0, 0
+  index: 4
+explosion/explosion
+  rotate: false
+  xy: 374, 2
+  size: 184, 184
+  orig: 184, 184
+  offset: 0, 0
+  index: 5
+explosion/explosion
+  rotate: false
+  xy: 560, 188
+  size: 184, 184
+  orig: 184, 184
+  offset: 0, 0
+  index: 6
+
+images6.png
 size: 1024, 64
 format: RGBA8888
 filter: Nearest, Nearest
@@ -316,7 +371,7 @@ golem/right
   offset: 0, 0
   index: 2
 
-images6.png
+images7.png
 size: 256, 64
 format: RGBA8888
 filter: Nearest, Nearest

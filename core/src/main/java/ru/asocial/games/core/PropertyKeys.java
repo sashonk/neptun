@@ -5,7 +5,7 @@ public class PropertyKeys {
     public static final String TYPE = "type";
     public static final String ANIMATION_STATE_TIME = "animationStateTime";
 
-    public static final String ANIMATIONS = "animations";
+    public static final String ANIMATION = "animation";
 
     public static final String HAS_ANIMATIONS = "has_animations";
 
@@ -42,6 +42,8 @@ public class PropertyKeys {
     public static final String IS_ENEMY = "is_enemy";
 
     public static final String DELAY = "delay";
+
+    public static final String IS_EXPLOSIVE = "is_explosive";
 
 
 }

@@ -1,6 +1,5 @@
 package ru.asocial.games.core.behaviours;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Interpolation;
@@ -10,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.*;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public abstract class MovingBehavior implements Behaviour {
@@ -77,7 +75,7 @@ public abstract class MovingBehavior implements Behaviour {
     }
 
     protected boolean isDirtAtCell(int cellX, int cellY) {
-        return dirtLayer.getCell(cellX, cellY) != null;
+        return CellUtils.isDirtAtCell(dirtLayer, cellX, cellY);
     }
 
     protected void removeDirtAtCell(int cellX, int cellY) {
@@ -85,11 +83,10 @@ public abstract class MovingBehavior implements Behaviour {
         if (tileLayerChangedListener != null) {
             tileLayerChangedListener.onTileLayerChanged();
         }
-
     }
 
     protected void freeObjectAtCell(Entity entity, Vector2 dir) {
-        matrix.free((int) entity.getX() / (int) entity.getWidth() + (int) dir.x,(int) entity.getY() / (int) entity.getHeight() + (int) dir.y);
+        EntityMatrixUtils.freeObject(matrix, entity, dir);
     }
 
     protected void freeObjectAtCell(int cellX, int cellY) {

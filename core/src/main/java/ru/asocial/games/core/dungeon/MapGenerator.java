@@ -170,7 +170,7 @@ public class MapGenerator {
                     TiledMapTileMapObject o = new TiledMapTileMapObject(animatedTile, false, false);
                     fillBaseProperties(o, x, y - 3, width, height, mapHeight);
                     o.getProperties().put("type", "exit");
-                    o.getProperties().put(PropertyKeys.ANIMATIONS, regionArray);
+                    o.getProperties().put(PropertyKeys.ANIMATION, regionArray);
                     wallLayer.getObjects().add(o);
                     exitPlaced = true;
                 }

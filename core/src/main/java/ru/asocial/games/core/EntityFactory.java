@@ -17,7 +17,6 @@ import ru.asocial.games.core.renderers.DefaultEntityRenderer;
 import ru.asocial.games.core.renderers.RollingStoneRenderer;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.util.*;
 
 public class EntityFactory {
@@ -35,6 +34,17 @@ public class EntityFactory {
         this.stage = stage;
         this.layers = layers;
         this.messagingService = messagingService;
+    }
+
+    public Entity newExplosion(Entity center, int offsetX, int offsetY) {
+        Entity explosion = new Entity();
+        float width = 48, height = 48;
+        explosion.setBounds(center.getX() + width * offsetX, center.getY() + height * offsetY, width, height);
+        explosion.setRenderer(new AnimatedEntityRenderer());
+        Animation<TextureRegion> animation = new Animation<>(0.04f, resourcesManager.getSkin().getRegions("explosion/explosion"));
+        explosion.putProperty(PropertyKeys.ANIMATION, animation);
+        explosion.addBehaviour(new LimitedLifeTimeBehavior(0.2f));
+        return explosion;
     }
 
     public Entity create(MapObject object) {
@@ -82,7 +92,7 @@ public class EntityFactory {
             animationMap.put(EntityOrientation.LEFT.name(), left);
             animationMap.put(EntityOrientation.BACK.name(), back);
             animationMap.put(EntityOrientation.FRONT.name(), front);
-            entity.putProperty(PropertyKeys.ANIMATIONS, animationMap);
+            entity.putProperty(PropertyKeys.ANIMATION, animationMap);
             entity.putProperty(PropertyKeys.ORIENTATION, EntityOrientation.FRONT.name());
             entity.setRenderer(new AnimatedEntityRenderer());
         }

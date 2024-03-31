@@ -19,7 +19,7 @@ public class AnimatedEntityRenderer implements EntityRenderer{
 
         entity.putProperty(PropertyKeys.ANIMATION_STATE_TIME, stateTime);
 
-        Object animationsObj = entity.getProperty(PropertyKeys.ANIMATIONS, Map.class);
+        Object animationsObj = entity.getProperty(PropertyKeys.ANIMATION, Object.class);
         Animation<TextureRegion> currentAnimation;
         if (animationsObj instanceof Map) {
             Map<String, Animation<TextureRegion>> animations = (Map<String, Animation<TextureRegion>>) animationsObj;

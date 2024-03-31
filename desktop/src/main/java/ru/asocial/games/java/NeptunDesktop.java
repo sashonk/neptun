@@ -8,6 +8,9 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 import ru.asocial.games.core.Neptun;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class NeptunDesktop {
 	public static void main (String[] args) {
 
@@ -26,9 +29,12 @@ public class NeptunDesktop {
 
 		Preferences neptun = Gdx.app.getPreferences("neptun");
 		//neptun.putBoolean("replay", true);
-		if (args.length > 0) {
-			if ("replay".equals(args[0])) {
+		for (String arg : args) {
+			if ("replay".equals(arg)) {
 				neptun.putBoolean("replay", true);
+			}
+			if ("debug".equals(arg)) {
+				neptun.putBoolean("debug", true);
 			}
 		}
 
