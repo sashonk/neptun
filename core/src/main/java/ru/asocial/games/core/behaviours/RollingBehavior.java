@@ -5,6 +5,9 @@ import ru.asocial.games.core.Entity;
 import ru.asocial.games.core.Layers;
 import ru.asocial.games.core.PropertyKeys;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class RollingBehavior  extends MovingBehavior{
     public RollingBehavior(Layers layers) {
         super(layers);
@@ -30,33 +33,25 @@ public class RollingBehavior  extends MovingBehavior{
         int cy = (int) (entity.getY() / entity.getHeight() + down.y);
         Entity e = getObjectAtCell(cx, cy);
         if (e != null && e.getPropertyOrDefault(PropertyKeys.CAN_ROLL, Boolean.class, false)) {
-            Vector2 right = new Vector2(1, 0);
-            int rx = (int) (entity.getX() / entity.getWidth() + right.x);
-            int ry = (int) (entity.getY() / entity.getHeight() + right.y);
-            if (isCellFree(rx, ry)) {
-                Vector2 rightDown = new Vector2(1, -1);
-                int rdx = (int) (entity.getX() / entity.getWidth() + rightDown.x);
-                int rdy = (int) (entity.getY() / entity.getHeight() + rightDown.y);
-                if (isCellFree(rdx, rdy)) {
-                    entity.putProperty(PropertyKeys.ROLLING_DIRECTION, "right");
-                    entity.putProperty(PropertyKeys.IS_ROLLING, true);
-                    return right;
+            Map<String, Integer> sides = new HashMap<>();
+            sides.put("left", -1);
+            sides.put("right", 1);
+            for (Map.Entry<String, Integer> sideEntry : sides.entrySet()) {
+                Vector2 right = new Vector2(sideEntry.getValue(), 0);
+                int rx = (int) (entity.getX() / entity.getWidth() + right.x);
+                int ry = (int) (entity.getY() / entity.getHeight() + right.y);
+                if (isCellFree(rx, ry)) {
+                    Vector2 rightDown = new Vector2(sideEntry.getValue(), -1);
+                    int rdx = (int) (entity.getX() / entity.getWidth() + rightDown.x);
+                    int rdy = (int) (entity.getY() / entity.getHeight() + rightDown.y);
+                    if (isCellFree(rdx, rdy)) {
+                        entity.putProperty(PropertyKeys.ROLLING_DIRECTION, sideEntry.getKey());
+                        entity.putProperty(PropertyKeys.IS_ROLLING, true);
+                        return right;
+                    }
                 }
             }
 
-            Vector2 left = new Vector2(-1, 0);
-            int lx = (int) (entity.getX() / entity.getWidth() + left.x);
-            int ly = (int) (entity.getY() / entity.getHeight() + left.y);
-            if (isCellFree(lx, ly)) {
-                Vector2 leftDown = new Vector2(-1, -1);
-                int ldx = (int) (entity.getX() / entity.getWidth() + leftDown.x);
-                int ldy = (int) (entity.getY() / entity.getHeight() + leftDown.y);
-                if (isCellFree(ldx, ldy)) {
-                    entity.putProperty(PropertyKeys.ROLLING_DIRECTION, "left");
-                    entity.putProperty(PropertyKeys.IS_ROLLING, true);
-                    return left;
-                }
-            }
         }
 
         return null;
