@@ -14,7 +14,6 @@ import ru.asocial.games.core.behaviours.*;
 import ru.asocial.games.core.events.EntityEvent;
 import ru.asocial.games.core.renderers.AnimatedEntityRenderer;
 import ru.asocial.games.core.renderers.DefaultEntityRenderer;
-import ru.asocial.games.core.renderers.RollingStoneRenderer;
 
 import java.io.BufferedReader;
 import java.util.*;
@@ -145,7 +144,6 @@ public class EntityFactory {
         boolean canFall = object.getProperties().get(PropertyKeys.CAN_FALL, false, Boolean.class);
         boolean canRoll = object.getProperties().get(PropertyKeys.CAN_ROLL, false, Boolean.class);
         if (canFall && canRoll) {
-            entity.setRenderer(new RollingStoneRenderer());
             entity.addBehaviour(new RollingStoneBehavior(layers));
         }
         else if (canFall) {
@@ -153,7 +151,6 @@ public class EntityFactory {
         }
         else if (canRoll) {
             entity.addBehaviour(new RollingBehavior(layers));
-            entity.setRenderer(new RollingStoneRenderer());
         }
 
         entity.addListener(event -> {

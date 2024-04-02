@@ -1,6 +1,9 @@
 package ru.asocial.games.core.behaviours;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import ru.asocial.games.core.Config;
 import ru.asocial.games.core.Entity;
 import ru.asocial.games.core.Layers;
 import ru.asocial.games.core.PropertyKeys;
