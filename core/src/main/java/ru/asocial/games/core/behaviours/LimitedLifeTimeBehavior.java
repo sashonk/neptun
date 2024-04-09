@@ -2,7 +2,7 @@ package ru.asocial.games.core.behaviours;
 
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.Entity;
-import ru.asocial.games.core.events.RemoveEntityEvent;
+import ru.asocial.games.core.events.DestroyEntityEvent;
 
 public class LimitedLifeTimeBehavior implements Behaviour {
 
@@ -20,7 +20,7 @@ public class LimitedLifeTimeBehavior implements Behaviour {
 
         if (timeLeft <= 0) {
             entity.addAction(Actions.removeActor());
-            entity.fire(new RemoveEntityEvent());
+            entity.fire(new DestroyEntityEvent());
         }
 
         entity.putProperty(PROP_TIME_LEFT, timeLeft);

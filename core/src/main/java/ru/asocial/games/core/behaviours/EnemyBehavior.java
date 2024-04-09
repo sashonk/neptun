@@ -6,8 +6,7 @@ import ru.asocial.games.core.Entity;
 import ru.asocial.games.core.EntityMatrix;
 import ru.asocial.games.core.EntityMatrixUtils;
 import ru.asocial.games.core.PropertyKeys;
-import ru.asocial.games.core.events.RemoveEntityEvent;
-import ru.asocial.games.core.events.RestartEvent;
+import ru.asocial.games.core.events.DestroyEntityEvent;
 
 import java.util.Arrays;
 
@@ -37,7 +36,7 @@ public class EnemyBehavior implements Behaviour {
             if (e != null && "deathspirit".equals(e.getProperty(PropertyKeys.TYPE, String.class))) {
                 EntityMatrixUtils.freeObject(matrix, e);
                 e.addAction(Actions.removeActor());
-                e.fire(new RemoveEntityEvent());
+                e.fire(new DestroyEntityEvent());
             }
         });
     }

@@ -11,17 +11,17 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
 import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.behaviours.EnemyBehavior;
 import ru.asocial.games.core.behaviours.MovingBehavior;
 import ru.asocial.games.core.dungeon.MapGenerator;
-import ru.asocial.games.core.events.RemoveEntityEvent;
 import ru.asocial.games.core.events.ExplodeEntityEvent;
+import ru.asocial.games.core.events.DestroyEntityEvent;
 import ru.asocial.games.core.events.RestartEvent;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 public class GameScreen extends BaseScreen {
@@ -201,7 +201,7 @@ public class GameScreen extends BaseScreen {
                                 EntityMatrixUtils.freeObject(entityMatrix, e1);
 
                                 e1.addAction(Actions.removeActor());
-                                e1.fire(new RemoveEntityEvent());
+                                e1.fire(new DestroyEntityEvent());
                                 //e1.fire(new RemoveEntityEvent());
                             }
                             else {
@@ -218,15 +218,21 @@ public class GameScreen extends BaseScreen {
                     }
 
                     explosive.addAction(Actions.removeActor());
-                    explosive.fire(new RemoveEntityEvent());
+                    explosive.fire(new DestroyEntityEvent());
                     EntityMatrixUtils.freeObject(entityMatrix, explosive);
 
                     if (needInvalidateCache) {
                         renderer.invalidateCache();
                     }
                 }
-                else if (event instanceof RemoveEntityEvent) {
+                else if (event instanceof DestroyEntityEvent) {
                     Entity entity = (Entity) event.getTarget();
+                    DestroyEntityEvent destroyEntityEvent = (DestroyEntityEvent) event;
+/*                    if (destroyEntityEvent.isSquized()) {
+                        Entity relatedEntity = destroyEntityEvent.getRelatedEntity();
+                        Collection<Actor> gore = Gore.generateGore(getResourcesManager(), entity, relatedEntity);
+                        gore.forEach(getStage()::addActor);
+                    }*/
                     if ("deathspirit".equals(entity.getProperty(PropertyKeys.TYPE, String.class)) ) {
                         getStage().getRoot().fire(new RestartEvent(entity, false));
                     }
@@ -244,7 +250,7 @@ public class GameScreen extends BaseScreen {
         if (!mapLoaded) {
             setup(false);
         } else {
-            Gdx.gl.glClearColor(0, 0, 0, 1);
+            Gdx.gl.glClearColor(0.3f, 0.3f, 0.3f, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
             getStage().act();

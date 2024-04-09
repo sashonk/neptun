@@ -107,6 +107,89 @@ size: 1024, 64
 format: RGBA8888
 filter: Nearest, Nearest
 repeat: none
+blood/1
+  rotate: false
+  xy: 2, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+blood/10
+  rotate: false
+  xy: 452, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+blood/11
+  rotate: false
+  xy: 502, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+blood/2
+  rotate: false
+  xy: 52, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+blood/3
+  rotate: false
+  xy: 102, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+blood/4
+  rotate: false
+  xy: 152, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+blood/5
+  rotate: false
+  xy: 202, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+blood/6
+  rotate: false
+  xy: 252, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+blood/7
+  rotate: false
+  xy: 302, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+blood/8
+  rotate: false
+  xy: 352, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+blood/9
+  rotate: false
+  xy: 402, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+
+images4.png
+size: 1024, 64
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
 deathspirit/back
   rotate: false
   xy: 2, 2
@@ -192,7 +275,7 @@ deathspirit/right
   offset: 0, 0
   index: 2
 
-images4.png
+images5.png
 size: 512, 128
 format: RGBA8888
 filter: Nearest, Nearest
@@ -226,7 +309,7 @@ doors/19/door
   offset: 0, 0
   index: 3
 
-images5.png
+images6.png
 size: 1024, 512
 format: RGBA8888
 filter: Nearest, Nearest
@@ -281,7 +364,7 @@ explosion/explosion
   offset: 0, 0
   index: 6
 
-images6.png
+images7.png
 size: 1024, 64
 format: RGBA8888
 filter: Nearest, Nearest
@@ -371,7 +454,55 @@ golem/right
   offset: 0, 0
   index: 2
 
-images7.png
+images8.png
+size: 256, 128
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+gore/1
+  rotate: false
+  xy: 2, 62
+  size: 100, 62
+  orig: 100, 62
+  offset: 0, 0
+  index: -1
+gore/2
+  rotate: false
+  xy: 208, 93
+  size: 30, 31
+  orig: 30, 31
+  offset: 0, 0
+  index: -1
+gore/3
+  rotate: false
+  xy: 176, 89
+  size: 30, 35
+  orig: 30, 35
+  offset: 0, 0
+  index: -1
+gore/4
+  rotate: false
+  xy: 104, 59
+  size: 70, 65
+  orig: 70, 65
+  offset: 0, 0
+  index: -1
+gore/5
+  rotate: false
+  xy: 2, 2
+  size: 70, 58
+  orig: 70, 58
+  offset: 0, 0
+  index: -1
+gore/6
+  rotate: false
+  xy: 176, 65
+  size: 30, 22
+  orig: 30, 22
+  offset: 0, 0
+  index: -1
+
+images9.png
 size: 256, 64
 format: RGBA8888
 filter: Nearest, Nearest

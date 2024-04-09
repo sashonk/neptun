@@ -4,12 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.Entity;
-import ru.asocial.games.core.EntityMatrixUtils;
 import ru.asocial.games.core.Layers;
 import ru.asocial.games.core.PropertyKeys;
-import ru.asocial.games.core.events.RemoveEntityEvent;
+import ru.asocial.games.core.events.DestroyEntityEvent;
 import ru.asocial.games.core.events.ExplodeEntityEvent;
-import ru.asocial.games.core.events.RestartEvent;
 
 public class FallingBehavior extends MovingBehavior{
     public FallingBehavior(Layers layers) {
@@ -57,7 +55,10 @@ public class FallingBehavior extends MovingBehavior{
             if (e.getPropertyOrDefault(PropertyKeys.IS_SQUIZABLE, Boolean.class, false)) {
                 freeObject(e);
                 e.addAction(Actions.removeActor());
-                e.fire(new RemoveEntityEvent());
+                DestroyEntityEvent event = new DestroyEntityEvent();
+                event.setRelatedEntity(entity);
+                event.setSquized(true);
+                e.fire(event);
             }
         }
 

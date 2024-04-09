@@ -120,7 +120,7 @@ public class MapGenerator {
                         o.getProperties().put("is_squizable",  true);
                         o.getProperties().put("is_walking", true);
                         o.getProperties().put("is_enemy", true);
-                        o.getProperties().put("is_explosive", true);
+                        //o.getProperties().put("is_explosive", true);
                         wallLayer.getObjects().add(o);
                     }
                 }
@@ -159,7 +159,7 @@ public class MapGenerator {
                         o.getProperties().put("is_squizable",  true);
                         o.getProperties().put("is_walking", true);
                         o.getProperties().put("is_enemy", true);
-                        o.getProperties().put("is_explosive", true);
+                        //o.getProperties().put("is_explosive", true);
                         wallLayer.getObjects().add(o);
                     }
                 }
