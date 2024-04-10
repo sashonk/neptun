@@ -1,9 +1,8 @@
 package ru.asocial.games.core.events;
 
-import com.badlogic.gdx.scenes.scene2d.Event;
 import ru.asocial.games.core.Entity;
 
-public class DestroyEntityEvent extends Event {
+public class DestroyEntityEvent extends EntityEvent {
 
     private Entity relatedEntity;
     private boolean squized;

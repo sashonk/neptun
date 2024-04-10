@@ -14,11 +14,13 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import ru.asocial.games.core.behaviours.EnemyBehavior;
 import ru.asocial.games.core.behaviours.MovingBehavior;
 import ru.asocial.games.core.dungeon.MapGenerator;
 import ru.asocial.games.core.events.ExplodeEntityEvent;
 import ru.asocial.games.core.events.DestroyEntityEvent;
+import ru.asocial.games.core.events.MoveEvent;
 import ru.asocial.games.core.events.RestartEvent;
 
 import java.util.Collection;
@@ -33,6 +35,8 @@ public class GameScreen extends BaseScreen {
     private TiledMap map;
 
     private Stage hud;
+    private Label playerCoors;
+    private Label exitCoors;
     private EntityPanel entityPanel;
 
     private EntityMatrix entityMatrix;
@@ -67,12 +71,24 @@ public class GameScreen extends BaseScreen {
         hud.dispose();
         hud = null;
         entityPanel = null;
+        playerCoors = null;
+        exitCoors = null;
         mapLoaded = false;
     }
 
     private void createMapFromDungeonFile(boolean next) {
         MapGenerator mapGenerator = new MapGenerator();
-        map = mapGenerator.generateMap(next, getResourcesManager().getSkin());
+        map = mapGenerator.generateMap(next, getResourcesManager().getSkin(), new MapGenerator.EventHandler() {
+            @Override
+            public void exitPlaced(int x, int y) {
+                exitCoors.setText("exit " + x + ":" + y);
+            }
+
+            @Override
+            public void playerPlaced(int x, int y) {
+                playerCoors.setText("player " + x + ":" + y);
+            }
+        });
     }
 
     private void createMapFromTmx() {
@@ -81,6 +97,16 @@ public class GameScreen extends BaseScreen {
     }
 
     public void setup(boolean nextLevel) {
+        hud = new Stage();
+        entityPanel = new EntityPanel(getResourcesManager().getSkin());
+        entityPanel.setPosition(300, 300);
+        hud.addActor(entityPanel);
+        playerCoors = new Label("n/a", getResourcesManager().getSkin());
+        exitCoors = new Label("n/a", getResourcesManager().getSkin());
+        exitCoors.setPosition(10, 10);
+        playerCoors.setPosition(10, 50);
+        hud.addActor(playerCoors);
+        hud.addActor(exitCoors);
 
         createMapFromDungeonFile(nextLevel);
 
@@ -95,7 +121,7 @@ public class GameScreen extends BaseScreen {
         Iterator<MapObject> objectIterator = wallsLayer.getObjects().iterator();
 
         Preferences prefs = Gdx.app.getPreferences("neptun");
-        entityMatrix = new EntityMatrix(200, 200, getResourcesManager(), prefs.getBoolean("debug"));
+        entityMatrix = new EntityMatrix(500, 500, getResourcesManager(), prefs.getBoolean("debug"));
         EntityFactory entityFactory = new EntityFactory(getResourcesManager(), layers, getStage(), messagingService);
 
         MovingBehavior.setObjectMatrix(entityMatrix);
@@ -115,9 +141,6 @@ public class GameScreen extends BaseScreen {
         getStage().addActor(entityMatrix);
 
         getStage().getRoot().setTouchable(Touchable.childrenOnly);
-
-        entityPanel = new EntityPanel(getResourcesManager().getSkin());
-        entityPanel.setPosition(300, 300);
 
         Actor player = getStage().getRoot().findActor("deathspirit");
         if (player != null) {
@@ -234,15 +257,22 @@ public class GameScreen extends BaseScreen {
                         gore.forEach(getStage()::addActor);
                     }*/
                     if ("deathspirit".equals(entity.getProperty(PropertyKeys.TYPE, String.class)) ) {
+                        //entity.setRotation();
                         getStage().getRoot().fire(new RestartEvent(entity, false));
+                    }
+                }
+                else if (event instanceof MoveEvent) {
+                    MoveEvent moveEvent = (MoveEvent) event;
+                    Entity entity = (Entity) moveEvent.getTarget();
+                    if ("deathspirit".equals(entity.getProperty(PropertyKeys.TYPE, String.class)) ) {
+                        //entity.setRotation();
+                        playerCoors.setText("player " + moveEvent.getX() + ":" + moveEvent.getY());
                     }
                 }
                 return false;
             }
         });
 
-        hud = new Stage();
-        hud.addActor(entityPanel);
         mapLoaded = true;
     }
 

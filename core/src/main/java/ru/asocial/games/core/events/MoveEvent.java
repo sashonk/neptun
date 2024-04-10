@@ -1,22 +1,19 @@
 package ru.asocial.games.core.events;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
-
 public class MoveEvent extends EntityEvent {
 
-    private String type;
+    private int x, y;
 
-    public MoveEvent(String type) {
-        this.type = type;
+    public MoveEvent(int newX, int newY) {
+        x = newX;
+        y = newY;
     }
-    @Override
-    public String toString(){
-        Actor target = getTarget();
-        if (target != null) {
-            String targetName = target.getName();
-            String name = targetName != null ? targetName : "Unk";
-            return name + ":" + type + ":" + target.getX() + ":" + target.getY();
-        }
-        return "";
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 }

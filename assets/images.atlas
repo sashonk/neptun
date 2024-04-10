@@ -365,6 +365,19 @@ explosion/explosion
   index: 6
 
 images7.png
+size: 64, 64
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+general/physical_hazard
+  rotate: false
+  xy: 2, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+
+images8.png
 size: 1024, 64
 format: RGBA8888
 filter: Nearest, Nearest
@@ -454,7 +467,7 @@ golem/right
   offset: 0, 0
   index: 2
 
-images8.png
+images9.png
 size: 256, 128
 format: RGBA8888
 filter: Nearest, Nearest
@@ -502,7 +515,7 @@ gore/6
   offset: 0, 0
   index: -1
 
-images9.png
+images10.png
 size: 256, 64
 format: RGBA8888
 filter: Nearest, Nearest

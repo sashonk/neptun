@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.*;
+import ru.asocial.games.core.events.MoveEvent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -146,17 +147,17 @@ public abstract class MovingBehavior implements Behaviour {
                     public boolean act(float delta) {
                         entity.putProperty(PropertyKeys.IS_MOVING, false);
                         entity.putProperty(PropertyKeys.IS_ROLLING, false);
-
                         MovingBehavior.this.act( entity, delta);
-
                         return true;
                     }
                 });
 
                 entity.addAction(moveToAction);
-                //entity.removeProperty(PropertyKeys.DELAY);
 
-                matrix.take((int) entity.getX() / (int) entity.getWidth()  + (int)nextMove.x,(int) entity.getY() / (int) entity.getHeight() + (int) nextMove.y, entity);
+                int tx = (int) entity.getX() / (int) entity.getWidth()  + (int)nextMove.x;
+                int ty = (int) entity.getY() / (int) entity.getHeight() + (int) nextMove.y;
+                matrix.take(tx,ty, entity);
+                entity.fire(new MoveEvent(tx, ty));
 
                 if (moveCallback != null) {
                     moveCallback.onMove(nextMove);
