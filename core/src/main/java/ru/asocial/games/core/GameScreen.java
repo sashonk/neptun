@@ -256,7 +256,7 @@ public class GameScreen extends BaseScreen {
                         Collection<Actor> gore = Gore.generateGore(getResourcesManager(), entity, relatedEntity);
                         gore.forEach(getStage()::addActor);
                     }*/
-                    if ("deathspirit".equals(entity.getProperty(PropertyKeys.TYPE, String.class)) ) {
+                    if ("player".equals(entity.getProperty(PropertyKeys.TYPE, String.class)) ) {
                         //entity.setRotation();
                         getStage().getRoot().fire(new RestartEvent(entity, false));
                     }
@@ -264,7 +264,7 @@ public class GameScreen extends BaseScreen {
                 else if (event instanceof MoveEvent) {
                     MoveEvent moveEvent = (MoveEvent) event;
                     Entity entity = (Entity) moveEvent.getTarget();
-                    if ("deathspirit".equals(entity.getProperty(PropertyKeys.TYPE, String.class)) ) {
+                    if ("player".equals(entity.getProperty(PropertyKeys.TYPE, String.class)) ) {
                         //entity.setRotation();
                         playerCoors.setText("player " + moveEvent.getX() + ":" + moveEvent.getY());
                     }

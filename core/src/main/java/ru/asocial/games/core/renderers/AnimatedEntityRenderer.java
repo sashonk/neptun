@@ -15,7 +15,12 @@ public class AnimatedEntityRenderer implements EntityRenderer{
     protected TextureRegion getCurrentFrame(Entity entity) {
         float stateTime = entity.getPropertyOrDefault(PropertyKeys.ANIMATION_STATE_TIME, Float.class, 0f);
 
-        stateTime += Gdx.graphics.getDeltaTime();
+        if (entity.getPropertyOrDefault(PropertyKeys.IS_ANIMATION_RUNNING, Boolean.class, false)) {
+            stateTime += Gdx.graphics.getDeltaTime();
+        }
+        else {
+            stateTime = 0.5f;
+        }
 
         entity.putProperty(PropertyKeys.ANIMATION_STATE_TIME, stateTime);
 
@@ -32,7 +37,6 @@ public class AnimatedEntityRenderer implements EntityRenderer{
         else {
             throw new GdxRuntimeException("animation not found");
         }
-
         return currentAnimation.getKeyFrame(stateTime);
     };
 

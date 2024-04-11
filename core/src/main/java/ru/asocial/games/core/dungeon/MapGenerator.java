@@ -67,9 +67,9 @@ public class MapGenerator {
         BufferedReader br = null;
         try {
             if (generateRandomMaps) {
-                int digit = rnd.nextInt(1, 5);
+                int digit = rnd.nextInt(1, 4);
                 String letter = rnd.nextBoolean() ? "a" : "b";
-                FileHandle designFile = Gdx.files.internal("designs/design" + digit + letter);
+                FileHandle designFile = Gdx.files.internal("designs/design" + digit + letter );
                 FileHandle tmp = FileHandle.tempFile("design");
                 designFile.copyTo(tmp);
                 //String designFileName = "C:\\Users\\user\\Downloads\\dmaker\\dungeonmaker2_0WinExe\\design";
@@ -103,7 +103,7 @@ public class MapGenerator {
             {
                 // Player
                 playerXY = exitPoints.remove(rnd.nextInt(exitPoints.size()));
-                Array<TextureRegion> regionArray = skin.getRegions("deathspirit/front");
+                Array<TextureRegion> regionArray = skin.getRegions("player/front");
                 TiledMapTile tile = new StaticTiledMapTile(regionArray.get(0));
                 TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
                 fillBaseProperties(o, playerXY.x, playerXY.y, width, height, mapHeight);
@@ -314,7 +314,7 @@ public class MapGenerator {
 
     void fillDeathSpiritProps(TiledMapTileMapObject o) {
         o.setName("deathspirit");
-        o.getProperties().put("type", "deathspirit");
+        o.getProperties().put("type", "player");
         o.getProperties().put("name", "deathspirit");
         o.getProperties().put("attach_controller",  true);
         o.getProperties().put("chase_camera",  true);

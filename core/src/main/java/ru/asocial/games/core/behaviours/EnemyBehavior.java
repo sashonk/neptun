@@ -33,7 +33,7 @@ public class EnemyBehavior implements Behaviour {
         };
         Arrays.stream(vv).forEach(v -> {
             Entity e = getObjectAtCell(entity, v);
-            if (e != null && "deathspirit".equals(e.getProperty(PropertyKeys.TYPE, String.class))) {
+            if (e != null && "player".equals(e.getProperty(PropertyKeys.TYPE, String.class))) {
                 EntityMatrixUtils.freeObject(matrix, e);
                 e.addAction(Actions.removeActor());
                 e.fire(new DestroyEntityEvent());

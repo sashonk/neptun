@@ -4,6 +4,7 @@ public class PropertyKeys {
     public static final String ORIENTATION = "orientation";
     public static final String TYPE = "type";
     public static final String ANIMATION_STATE_TIME = "animationStateTime";
+    public static final String IS_ANIMATION_RUNNING = "is_animation_running";
 
     public static final String ANIMATION = "animation";
 

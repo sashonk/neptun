@@ -42,6 +42,7 @@ public class EntityFactory {
         explosion.setRenderer(new AnimatedEntityRenderer());
         Animation<TextureRegion> animation = new Animation<>(0.04f, resourcesManager.getSkin().getRegions("explosion/explosion"));
         explosion.putProperty(PropertyKeys.ANIMATION, animation);
+        explosion.putProperty(PropertyKeys.IS_ANIMATION_RUNNING, true);
         explosion.addBehaviour(new LimitedLifeTimeBehavior(0.2f));
         return explosion;
     }

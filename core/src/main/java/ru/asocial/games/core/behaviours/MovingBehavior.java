@@ -129,6 +129,8 @@ public abstract class MovingBehavior implements Behaviour {
             Vector2 nextMove = findNextMove(entity);
             if (nextMove != null) {
                 entity.putProperty(PropertyKeys.IS_MOVING, true);
+                entity.putProperty(PropertyKeys.IS_ANIMATION_RUNNING, true);
+
                 EntityMove direction = EntityMove.fromVector2(nextMove);
                 entity.putProperty("next_move", nextMove);
                 EntityOrientation orientation = EntityOrientation.fromMoveDirection(direction);
@@ -147,6 +149,7 @@ public abstract class MovingBehavior implements Behaviour {
                     public boolean act(float delta) {
                         entity.putProperty(PropertyKeys.IS_MOVING, false);
                         entity.putProperty(PropertyKeys.IS_ROLLING, false);
+                        entity.putProperty(PropertyKeys.IS_ANIMATION_RUNNING, false);
                         MovingBehavior.this.act( entity, delta);
                         return true;
                     }
