@@ -13,17 +13,6 @@ import java.util.Map;
 public class AnimatedEntityRenderer implements EntityRenderer{
 
     protected TextureRegion getCurrentFrame(Entity entity) {
-        float stateTime = entity.getPropertyOrDefault(PropertyKeys.ANIMATION_STATE_TIME, Float.class, 0f);
-
-        if (entity.getPropertyOrDefault(PropertyKeys.IS_ANIMATION_RUNNING, Boolean.class, false)) {
-            stateTime += Gdx.graphics.getDeltaTime();
-        }
-        else {
-            stateTime = 0.5f;
-        }
-
-        entity.putProperty(PropertyKeys.ANIMATION_STATE_TIME, stateTime);
-
         Object animationsObj = entity.getProperty(PropertyKeys.ANIMATION, Object.class);
         Animation<TextureRegion> currentAnimation;
         if (animationsObj instanceof Map) {
@@ -36,6 +25,15 @@ public class AnimatedEntityRenderer implements EntityRenderer{
         }
         else {
             throw new GdxRuntimeException("animation not found");
+        }
+
+        float stateTime = entity.getPropertyOrDefault(PropertyKeys.ANIMATION_STATE_TIME, Float.class, 0f);
+        if (entity.getPropertyOrDefault(PropertyKeys.IS_ANIMATION_RUNNING, Boolean.class, false)) {
+            stateTime += Gdx.graphics.getDeltaTime();
+            entity.putProperty(PropertyKeys.ANIMATION_STATE_TIME, stateTime);
+        }
+        else {
+            stateTime = currentAnimation.getFrameDuration() + 0.01f;
         }
         return currentAnimation.getKeyFrame(stateTime);
     };

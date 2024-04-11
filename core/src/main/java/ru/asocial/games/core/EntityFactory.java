@@ -74,7 +74,7 @@ public class EntityFactory {
 
         if (object.getProperties().get(PropertyKeys.HAS_ANIMATIONS, false, Boolean.class)) {
             Skin skin = resourcesManager.getSkin();
-            float frameDur = 0.3f;
+            float frameDur = 0.1f;
             Array<TextureRegion> regionsFront = resourcesManager.getSkin().getRegions(type+"/front");
             Animation<TextureRegion> front = new Animation<>(frameDur, regionsFront, Animation.PlayMode.LOOP);
 
