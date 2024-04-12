@@ -190,6 +190,124 @@ size: 1024, 64
 format: RGBA8888
 filter: Nearest, Nearest
 repeat: none
+bomb/bomb
+  rotate: false
+  xy: 2, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 0
+bomb/bomb
+  rotate: false
+  xy: 36, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 1
+bomb/bomb
+  rotate: false
+  xy: 70, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 2
+bomb/bomb
+  rotate: false
+  xy: 104, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 3
+bomb/bomb
+  rotate: false
+  xy: 138, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 4
+bomb/bomb
+  rotate: false
+  xy: 172, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 5
+bomb/bomb
+  rotate: false
+  xy: 206, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 6
+bomb/bomb
+  rotate: false
+  xy: 240, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 7
+bomb/bomb
+  rotate: false
+  xy: 274, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 8
+bomb/bomb
+  rotate: false
+  xy: 308, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 9
+bomb/bomb
+  rotate: false
+  xy: 342, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 10
+bomb/bomb
+  rotate: false
+  xy: 376, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 11
+bomb/bomb
+  rotate: false
+  xy: 410, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 12
+bomb/bomb
+  rotate: false
+  xy: 444, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 13
+bomb/bomb
+  rotate: false
+  xy: 478, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 14
+bomb/bomb
+  rotate: false
+  xy: 512, 2
+  size: 32, 52
+  orig: 32, 52
+  offset: 0, 0
+  index: 15
+
+images5.png
+size: 1024, 64
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
 deathspirit/back
   rotate: false
   xy: 2, 2
@@ -275,7 +393,7 @@ deathspirit/right
   offset: 0, 0
   index: 2
 
-images5.png
+images6.png
 size: 512, 128
 format: RGBA8888
 filter: Nearest, Nearest
@@ -309,7 +427,7 @@ doors/19/door
   offset: 0, 0
   index: 3
 
-images6.png
+images7.png
 size: 1024, 512
 format: RGBA8888
 filter: Nearest, Nearest
@@ -364,7 +482,7 @@ explosion/explosion
   offset: 0, 0
   index: 6
 
-images7.png
+images8.png
 size: 64, 64
 format: RGBA8888
 filter: Nearest, Nearest
@@ -377,7 +495,7 @@ general/physical_hazard
   offset: 0, 0
   index: -1
 
-images8.png
+images9.png
 size: 1024, 64
 format: RGBA8888
 filter: Nearest, Nearest
@@ -467,7 +585,7 @@ golem/right
   offset: 0, 0
   index: 2
 
-images9.png
+images10.png
 size: 256, 128
 format: RGBA8888
 filter: Nearest, Nearest
@@ -515,7 +633,7 @@ gore/6
   offset: 0, 0
   index: -1
 
-images10.png
+images11.png
 size: 1024, 64
 format: RGBA8888
 filter: Nearest, Nearest
@@ -605,7 +723,7 @@ player/right
   offset: 0, 0
   index: 2
 
-images11.png
+images12.png
 size: 256, 64
 format: RGBA8888
 filter: Nearest, Nearest

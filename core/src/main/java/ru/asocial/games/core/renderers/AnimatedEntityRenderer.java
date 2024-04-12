@@ -41,7 +41,7 @@ public class AnimatedEntityRenderer implements EntityRenderer{
     @Override
     public void render(Entity entity, Batch batch, float parentAlpha) {
         TextureRegion region = getCurrentFrame(entity);
-
-        batch.draw(region, entity.getX(), entity.getY(), entity.getWidth(), entity.getHeight());
+        float angle = entity.getRotation();
+        batch.draw(region, entity.getX(), entity.getY(), entity.getWidth() / 2, entity.getHeight() / 2, entity.getWidth(), entity.getHeight(), entity.getScaleX(), entity.getScaleY(), angle);
     }
 }

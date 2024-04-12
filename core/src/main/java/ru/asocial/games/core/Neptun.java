@@ -52,7 +52,9 @@ public class Neptun extends Game implements IGame{
 		messagingService = messagingServiceIterator.hasNext() ? messagingServiceIterator.next() : new IMessageService() {
 			@Override
 			public void writeMessage(String tag, String message) {
-				System.out.println(tag + ":" + message);
+				if (!message.contains("MoveEvent")) {
+					System.out.println(tag + ":" + message);
+				}
 			}
 
 			@Override

@@ -6,7 +6,7 @@ import ru.asocial.games.core.Entity;
 import ru.asocial.games.core.EntityMatrix;
 import ru.asocial.games.core.EntityMatrixUtils;
 import ru.asocial.games.core.PropertyKeys;
-import ru.asocial.games.core.events.DestroyEntityEvent;
+import ru.asocial.games.core.events.PlayerKilledEvent;
 
 import java.util.Arrays;
 
@@ -33,10 +33,10 @@ public class EnemyBehavior implements Behaviour {
         };
         Arrays.stream(vv).forEach(v -> {
             Entity e = getObjectAtCell(entity, v);
-            if (e != null && "player".equals(e.getProperty(PropertyKeys.TYPE, String.class))) {
-                EntityMatrixUtils.freeObject(matrix, e);
-                e.addAction(Actions.removeActor());
-                e.fire(new DestroyEntityEvent());
+            if (e != null && "player".equals(e.getProperty(PropertyKeys.TYPE, String.class)) && !e.getPropertyOrDefault("is_dead", Boolean.class, false)) {
+                //EntityMatrixUtils.freeObject(matrix, e);
+                //e.addAction(Actions.removeActor());
+                e.fire(new PlayerKilledEvent(e));
             }
         });
     }

@@ -1,9 +1,11 @@
 package ru.asocial.games.core.behaviours;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.math.Vector2;
 import ru.asocial.games.core.*;
+import ru.asocial.games.core.events.PlaceBombEvent;
 import ru.asocial.games.core.events.RestartEvent;
 
 public class PlayerBehavior extends MovingBehavior{
@@ -37,7 +39,29 @@ public class PlayerBehavior extends MovingBehavior{
     }
 
     @Override
+    public void act(Entity entity, float delta) {
+        super.act(entity, delta);
+
+        if (Gdx.input.isKeyPressed(Input.Keys.C)) {
+            Float bombRegenTime =  entity.getPropertyOrDefault("bomb_regen_time", Float.class, 0f);
+            if (bombRegenTime <= 0) {
+                entity.putProperty("bomb_regen_time", 3f);
+                String orientation = entity.getProperty(PropertyKeys.ORIENTATION, String.class);
+                entity.fire(new PlaceBombEvent());
+            }
+        }
+
+        Float bombRegenTime = entity.getPropertyOrDefault("bomb_regen_time", Float.class, 0f);
+        if (bombRegenTime > 0) {
+            entity.putProperty("bomb_regen_time", bombRegenTime - delta);
+        }
+    }
+
+    @Override
     protected Vector2 findNextMove(Entity entity) {
+        if (entity.getPropertyOrDefault("is_dead", Boolean.class, false)) {
+            return null;
+        }
         Vector2 move = doFindNextMove();
         if (move != null) {
             Preferences keyboardKeys = Gdx.app.getPreferences("keyboard");

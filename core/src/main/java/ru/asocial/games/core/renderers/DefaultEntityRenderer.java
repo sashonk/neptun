@@ -10,6 +10,6 @@ public class DefaultEntityRenderer implements EntityRenderer{
     public void render(Entity entity, Batch batch, float parentAlpha) {
         TextureRegion region = entity.getProperty(PropertyKeys.TEXTURE_REGION, TextureRegion.class);
         float angle = entity.getRotation();
-        batch.draw(region, entity.getX(), entity.getY(), entity.getWidth() / 2, entity.getHeight() / 2, entity.getWidth(), entity.getHeight(), 1, 1, angle);
+        batch.draw(region, entity.getX(), entity.getY(), entity.getWidth() / 2, entity.getHeight() / 2, entity.getWidth(), entity.getHeight(), entity.getScaleX(), entity.getScaleY(), angle);
     }
 }

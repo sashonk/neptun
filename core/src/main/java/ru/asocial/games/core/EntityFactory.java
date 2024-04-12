@@ -7,11 +7,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import ru.asocial.games.core.behaviours.*;
 import ru.asocial.games.core.events.EntityEvent;
+import ru.asocial.games.core.events.ExplodeEntityEvent;
 import ru.asocial.games.core.renderers.AnimatedEntityRenderer;
 import ru.asocial.games.core.renderers.DefaultEntityRenderer;
 
@@ -45,6 +48,27 @@ public class EntityFactory {
         explosion.putProperty(PropertyKeys.IS_ANIMATION_RUNNING, true);
         explosion.addBehaviour(new LimitedLifeTimeBehavior(0.2f));
         return explosion;
+    }
+
+    public Entity newBomb(Entity center) {
+        Entity bomb = new Entity();
+        float width = 48, height = 48;
+        bomb.setBounds(center.getX(), center.getY(), width, height);
+        bomb.setRenderer(new AnimatedEntityRenderer());
+        Array<TextureRegion> keyFrames = resourcesManager.getSkin().getRegions("bomb/bomb");
+        Animation<TextureRegion> animation = new Animation<>(0.1875f, keyFrames);
+        bomb.putProperty(PropertyKeys.ANIMATION, animation);
+        bomb.putProperty(PropertyKeys.IS_ANIMATION_RUNNING, true);
+        bomb.addBehaviour(new LimitedLifeTimeBehavior(3f));
+        bomb.setScaleX(0.8f);
+        bomb.addAction(Actions.sequence(Actions.delay(3f), new Action() {
+            @Override
+            public boolean act(float delta) {
+                bomb.fire(new ExplodeEntityEvent());
+                return true;
+            }
+        }));
+        return bomb;
     }
 
     public Entity create(MapObject object) {

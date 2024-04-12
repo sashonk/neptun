@@ -17,13 +17,10 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import ru.asocial.games.core.behaviours.EnemyBehavior;
 import ru.asocial.games.core.behaviours.MovingBehavior;
+import ru.asocial.games.core.behaviours.PlayerBehavior;
 import ru.asocial.games.core.dungeon.MapGenerator;
-import ru.asocial.games.core.events.ExplodeEntityEvent;
-import ru.asocial.games.core.events.DestroyEntityEvent;
-import ru.asocial.games.core.events.MoveEvent;
-import ru.asocial.games.core.events.RestartEvent;
+import ru.asocial.games.core.events.*;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 public class GameScreen extends BaseScreen {
@@ -260,6 +257,22 @@ public class GameScreen extends BaseScreen {
                         //entity.setRotation();
                         getStage().getRoot().fire(new RestartEvent(entity, false));
                     }
+                }
+                else if (event instanceof PlayerKilledEvent) {
+                    PlayerKilledEvent playerKilledEvent = (PlayerKilledEvent) event;
+                    Entity e = playerKilledEvent.getVictim();
+                    //e.setRotation(90);
+                    e.addAction(Actions.rotateBy(90, 1));
+                    e.putProperty(PropertyKeys.IS_MOVING, false);
+                    e.removeBehaviours(PlayerBehavior.class);
+                    e.putProperty("is_dead", true);
+                    e.fire(new RestartEvent(e, false));
+                }
+                else if (event instanceof PlaceBombEvent) {
+                    PlaceBombEvent placeBombEvent = (PlaceBombEvent) event;
+                    Entity e = (Entity) placeBombEvent.getTarget();
+                    Entity bomb = entityFactory.newBomb(e);
+                    getStage().addActor(bomb);
                 }
                 else if (event instanceof MoveEvent) {
                     MoveEvent moveEvent = (MoveEvent) event;

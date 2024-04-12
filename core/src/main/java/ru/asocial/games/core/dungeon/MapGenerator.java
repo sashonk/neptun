@@ -69,7 +69,7 @@ public class MapGenerator {
             if (generateRandomMaps) {
                 int digit = rnd.nextInt(1, 4);
                 String letter = rnd.nextBoolean() ? "a" : "b";
-                FileHandle designFile = Gdx.files.internal("designs/design" + digit + letter );
+                FileHandle designFile = Gdx.files.internal("designs/design3a");
                 FileHandle tmp = FileHandle.tempFile("design");
                 designFile.copyTo(tmp);
                 //String designFileName = "C:\\Users\\user\\Downloads\\dmaker\\dungeonmaker2_0WinExe\\design";
