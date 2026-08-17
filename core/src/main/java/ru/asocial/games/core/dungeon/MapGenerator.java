@@ -34,7 +34,10 @@ public class MapGenerator {
 
     private boolean generateRandomMaps = true;
 
-    private final List<GridPoint2> exitPoints = new LinkedList<>();
+    private String fixedDungeonFile;
+
+    private int layerWidth = 500;
+    private int layerHeight = 500;
 
     private int x;
 
@@ -44,11 +47,22 @@ public class MapGenerator {
         void playerPlaced(int x, int y);
     }
 
+    public void setFixedDungeonFile(String fixedDungeonFile, int mapSize) {
+        this.fixedDungeonFile = fixedDungeonFile;
+        this.generateRandomMaps = false;
+        this.layerWidth = mapSize + 50;
+        this.layerHeight = mapSize + 50;
+    }
+
+    private final List<GridPoint2> exitPoints = new LinkedList<>();
+
     public TiledMap generateMap(boolean next, Skin skin, EventHandler handler) {
+        x = 0;
+        exitPoints.clear();
         TiledMap tiledMap = new TiledMap();
 /*            MapLayer mainLayer = new MapGroupLayer();
             mainLayer.setName("main");*/
-        int layerWidth = 500, layerHeight = 500;
+        int layerWidth = this.layerWidth, layerHeight = this.layerHeight;
         int tileWidth = 48, tileHeight = 48;
         TiledMapTileLayer imageLayer = new TiledMapTileLayer(layerWidth, layerHeight, tileWidth, tileHeight);
         imageLayer.setName("image");
@@ -67,7 +81,11 @@ public class MapGenerator {
 
         BufferedReader br = null;
         try {
-            if (generateRandomMaps) {
+            if (fixedDungeonFile != null) {
+                FileHandle dungFile = Gdx.files.internal(fixedDungeonFile);
+                br = dungFile.reader(1024);
+            }
+            else if (generateRandomMaps) {
                 int digit = rnd.nextInt(1, 4);
                 String letter = rnd.nextBoolean() ? "a" : "b";
                 FileHandle designFile = Gdx.files.internal("designs/design3a");

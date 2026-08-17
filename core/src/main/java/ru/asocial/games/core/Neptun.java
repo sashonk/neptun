@@ -12,6 +12,8 @@ import java.util.Map;
 
 public class Neptun extends Game implements IGame{
 
+	private static String[] launchArgs = new String[0];
+
 	private Map<String, BaseScreen> screens = new HashMap<>();
 
 	private Graphics.DisplayMode displayMode;
@@ -36,6 +38,19 @@ public class Neptun extends Game implements IGame{
 
 	}
 
+	public static void setLaunchArgs(String[] args) {
+		launchArgs = args != null ? args : new String[0];
+	}
+
+	public static boolean hasLaunchArg(String arg) {
+		for (String launchArg : launchArgs) {
+			if (arg.equals(launchArg)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@Override
 	public void create() {
 		Gdx.graphics.setWindowedMode(600, 1000);
@@ -50,8 +65,24 @@ public class Neptun extends Game implements IGame{
 		keyboard.putInteger("action", Input.Keys.SPACE);
 
 		Preferences neptun = Gdx.app.getPreferences("neptun");
-		//neptun.putBoolean("replay", true);
-
+		for (String arg : launchArgs) {
+			if ("replay".equals(arg)) {
+				neptun.putBoolean("replay", true);
+			}
+			if ("debug".equals(arg)) {
+				neptun.putBoolean("debug", true);
+			}
+			if ("metrics".equals(arg)) {
+				neptun.putBoolean("metrics", true);
+			}
+			if ("map150".equals(arg)) {
+				neptun.putBoolean("map150", true);
+			}
+			if ("map300".equals(arg)) {
+				neptun.putBoolean("map300", true);
+			}
+		}
+		neptun.flush();
 	}
 
 	@Override

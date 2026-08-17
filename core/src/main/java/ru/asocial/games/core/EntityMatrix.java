@@ -54,7 +54,11 @@ public class EntityMatrix extends Actor {
             for (int i = 0; i < entities.length; i++) {
                 for (int j = 0; j< entities[i].length; j++) {
                     if (entities[i][j] != null) {
-                        batch.draw(dbg_tex, i * 48, j * 48, 48, 48);
+                        float x = i * 48;
+                        float y = j * 48;
+                        if (DrawCuller.isRectVisible(x, y, 48, 48)) {
+                            batch.draw(dbg_tex, x, y, 48, 48);
+                        }
                     }
                 }
             }

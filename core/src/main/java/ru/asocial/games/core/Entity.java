@@ -44,7 +44,9 @@ public class Entity extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha){
-
+        if (!DrawCuller.isVisible(this)) {
+            return;
+        }
         renderer.render(this, batch, parentAlpha);
     }
 

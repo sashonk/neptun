@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Align;
 import ru.asocial.games.core.behaviours.EnemyBehavior;
 import ru.asocial.games.core.behaviours.MovingBehavior;
 import ru.asocial.games.core.behaviours.PlayerBehavior;
@@ -39,6 +40,10 @@ public class GameScreen extends BaseScreen {
     private EntityMatrix entityMatrix;
 
     private long lastSeed;
+
+    private final FrameProfiler frameProfiler = new FrameProfiler();
+    private boolean metricsEnabled;
+    private Label metricsLabel;
 
     public GameScreen(IGame game) {
         super(game, 600, 1000);
@@ -66,11 +71,18 @@ public class GameScreen extends BaseScreen {
         entityPanel = null;
         playerCoors = null;
         exitCoors = null;
+        metricsLabel = null;
         mapLoaded = false;
     }
 
     private void createMapFromDungeonFile(boolean next) {
         MapGenerator mapGenerator = new MapGenerator();
+        Preferences prefs = Gdx.app.getPreferences("neptun");
+        if (prefs.getBoolean("map300") || Neptun.hasLaunchArg("map300")) {
+            mapGenerator.setFixedDungeonFile("dungeons/300.txt", 300);
+        } else if (prefs.getBoolean("map150") || Neptun.hasLaunchArg("map150")) {
+            mapGenerator.setFixedDungeonFile("dungeons/150.txt", 150);
+        }
         map = mapGenerator.generateMap(next, getResourcesManager().getSkin(), new MapGenerator.EventHandler() {
             @Override
             public void exitPlaced(int x, int y) {
@@ -91,6 +103,7 @@ public class GameScreen extends BaseScreen {
 
     public void setup(boolean nextLevel) {
         hud = new Stage();
+        hud.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         entityPanel = new EntityPanel(getResourcesManager().getSkin());
         entityPanel.setPosition(300, 300);
         hud.addActor(entityPanel);
@@ -131,11 +144,25 @@ public class GameScreen extends BaseScreen {
         Iterator<MapObject> objectIterator = wallsLayer.getObjects().iterator();
 
         Preferences prefs = Gdx.app.getPreferences("neptun");
-        entityMatrix = new EntityMatrix(500, 500, getResourcesManager(), prefs.getBoolean("debug"));
+        boolean map300 = prefs.getBoolean("map300") || Neptun.hasLaunchArg("map300");
+        boolean map150 = prefs.getBoolean("map150") || Neptun.hasLaunchArg("map150");
+        metricsEnabled = prefs.getBoolean("metrics") || prefs.getBoolean("debug")
+                || Neptun.hasLaunchArg("metrics") || Neptun.hasLaunchArg("debug");
+        if (metricsEnabled) {
+            metricsLabel = new Label("metrics...", getResourcesManager().getSkin());
+            metricsLabel.setAlignment(Align.topLeft);
+            layoutMetricsLabel();
+            hud.addActor(metricsLabel);
+            metricsLabel.toFront();
+            Gdx.app.log("GameScreen", "metrics overlay enabled");
+        }
+
+        int matrixSize = map300 ? 350 : map150 ? 200 : 500;
+        entityMatrix = new EntityMatrix(matrixSize, matrixSize, getResourcesManager(), prefs.getBoolean("debug"));
         EntityFactory entityFactory = new EntityFactory(getResourcesManager(), layers, getStage());
 
         MovingBehavior.setObjectMatrix(entityMatrix);
-        MovingBehavior.TileLayerChangedListener tileLayerChangedListener = () -> renderer.invalidateCache();
+        MovingBehavior.TileLayerChangedListener tileLayerChangedListener = this::invalidateMapCache;
         MovingBehavior.setTileLayerChangedListener(tileLayerChangedListener);
 
         EnemyBehavior.setMatrix(entityMatrix);
@@ -219,7 +246,7 @@ public class GameScreen extends BaseScreen {
                     EntityMatrixUtils.freeObject(entityMatrix, explosive);
 
                     if (needInvalidateCache) {
-                        renderer.invalidateCache();
+                        invalidateMapCache();
                     }
                 }
                 else if (event instanceof DestroyEntityEvent) {
@@ -263,8 +290,24 @@ public class GameScreen extends BaseScreen {
         p.addProcessor(getStage());
         Gdx.input.setInputProcessor(p);
 
+        frameProfiler.setMapSize(wallsLayer.getWidth(), wallsLayer.getHeight());
+        frameProfiler.setMatrixSize(matrixSize, matrixSize);
+
         mapLoaded = true;
 
+    }
+
+    private void invalidateMapCache() {
+        renderer.invalidateCache();
+        frameProfiler.recordCacheInvalidation();
+    }
+
+    private void layoutMetricsLabel() {
+        if (metricsLabel == null) {
+            return;
+        }
+        float hudHeight = hud.getViewport().getWorldHeight();
+        metricsLabel.setPosition(10, hudHeight - 10);
     }
 
     public void render(float delta) {
@@ -274,18 +317,36 @@ public class GameScreen extends BaseScreen {
             Gdx.gl.glClearColor(0.3f, 0.3f, 0.3f, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+            frameProfiler.beginAct();
             getStage().act();
+            frameProfiler.endAct();
+
             getStage().getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             renderer.setView((OrthographicCamera) getStage().getCamera());
 
+            frameProfiler.beginMapRender();
             renderer.render();
+            frameProfiler.endMapRender();
 
-            //getStage().setC
+            frameProfiler.beginStageDraw();
+            DrawCuller.begin((OrthographicCamera) getStage().getCamera());
             getStage().draw();
+            frameProfiler.endStageDraw();
 
             hud.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+            frameProfiler.beginHud();
             hud.act();
+            if (metricsEnabled && metricsLabel != null) {
+                layoutMetricsLabel();
+                metricsLabel.setText(frameProfiler.formatOverlay());
+                metricsLabel.toFront();
+            }
             hud.draw();
+            frameProfiler.endHud();
+
+            frameProfiler.endFrame(delta, getStage().getRoot().getChildren().size,
+                    DrawCuller.getVisibleCount(), DrawCuller.getCulledCount());
 
         }
 

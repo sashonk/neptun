@@ -1,42 +1,19 @@
 package ru.asocial.games.java;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 import ru.asocial.games.core.Neptun;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class NeptunDesktop {
 	public static void main (String[] args) {
-
+		if (args.length == 0) {
+			args = new String[]{"map300"};
+		}
+		Neptun.setLaunchArgs(args);
 
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		//config.vSyncEnabled = true;
 		new LwjglApplication(new Neptun(), config);
-
-
-		Preferences keyboard = Gdx.app.getPreferences("keyboard");
-		keyboard.putInteger("up", Input.Keys.W);
-		keyboard.putInteger("left", Input.Keys.A);
-		keyboard.putInteger("down", Input.Keys.S);
-		keyboard.putInteger("right", Input.Keys.D);
-		keyboard.putInteger("action", Input.Keys.SPACE);
-
-		Preferences neptun = Gdx.app.getPreferences("neptun");
-		//neptun.putBoolean("replay", true);
-		for (String arg : args) {
-			if ("replay".equals(arg)) {
-				neptun.putBoolean("replay", true);
-			}
-			if ("debug".equals(arg)) {
-				neptun.putBoolean("debug", true);
-			}
-		}
-
 	}
 }
