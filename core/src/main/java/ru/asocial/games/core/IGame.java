@@ -6,6 +6,4 @@ public interface IGame {
     void setResourceManager(ResourcesManager resourcesManager);
 
     void onLoad();
-
-    IMessageService getMessagingService();
 }

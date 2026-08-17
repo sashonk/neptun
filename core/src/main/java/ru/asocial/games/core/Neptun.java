@@ -8,9 +8,7 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.ServiceLoader;
 
 public class Neptun extends Game implements IGame{
 
@@ -19,9 +17,6 @@ public class Neptun extends Game implements IGame{
 	private Graphics.DisplayMode displayMode;
 
 	private ResourcesManager resourcesManager;
-
-
-	private IMessageService messagingService;
 
 	@Override
 	public ResourcesManager getResourcesManager() {
@@ -43,29 +38,9 @@ public class Neptun extends Game implements IGame{
 
 	@Override
 	public void create() {
-		//Gdx.graphics.set
 		Gdx.graphics.setWindowedMode(600, 1000);
 
-		//Gdx.graphics.setWindowedMode(1000, 1000);
-
 		setScreen(new SplashScreen(this));
-
-		ServiceLoader<IMessageService> serviceLoader = ServiceLoader.load(IMessageService.class);
-		Iterator<IMessageService> messagingServiceIterator = serviceLoader.iterator();
-		messagingService = messagingServiceIterator.hasNext() ? messagingServiceIterator.next() : new IMessageService() {
-			@Override
-			public void writeMessage(String tag, String message) {
-				if (!message.contains("MoveEvent")) {
-					System.out.println(tag + ":" + message);
-				}
-			}
-
-			@Override
-			public void close() {
-				//NOOP
-			}
-		};
-
 
 		Preferences keyboard = Gdx.app.getPreferences("keyboard");
 		keyboard.putInteger("up", Input.Keys.W);
@@ -89,8 +64,6 @@ public class Neptun extends Game implements IGame{
 			screen.dispose();
 		}
 
-		messagingService.close();
-
 		Gdx.app.exit();
 	}
 
@@ -99,11 +72,6 @@ public class Neptun extends Game implements IGame{
 		Screen exaustedScreen = super.getScreen();
 		exaustedScreen.dispose();
 		setScreen(new GameScreen(this));
-	}
-
-	@Override
-	public IMessageService getMessagingService() {
-		return messagingService;
 	}
 
 }

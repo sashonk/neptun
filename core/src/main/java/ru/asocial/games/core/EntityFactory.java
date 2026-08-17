@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import ru.asocial.games.core.behaviours.*;
-import ru.asocial.games.core.events.EntityEvent;
 import ru.asocial.games.core.events.ExplodeEntityEvent;
 import ru.asocial.games.core.renderers.AnimatedEntityRenderer;
 import ru.asocial.games.core.renderers.DefaultEntityRenderer;
@@ -29,13 +28,10 @@ public class EntityFactory {
 
     private Stage stage;
 
-    private IMessageService messagingService;
-
-    public EntityFactory(ResourcesManager resourcesManager, Layers layers, Stage stage, IMessageService messagingService) {
+    public EntityFactory(ResourcesManager resourcesManager, Layers layers, Stage stage) {
         this.resourcesManager = resourcesManager;
         this.stage = stage;
         this.layers = layers;
-        this.messagingService = messagingService;
     }
 
     public Entity newExplosion(Entity center, int offsetX, int offsetY) {
@@ -170,17 +166,6 @@ public class EntityFactory {
         else if (canRoll) {
             entity.addBehaviour(new RollingBehavior(layers));
         }
-
-        entity.addListener(event -> {
-            if (event instanceof EntityEvent && object.getProperties().get(PropertyKeys.ATTACH_CONTROLLER, false, Boolean.class)) {
-                //messagingService.writeMessage(event.getClass().getName(), event.toString());
-
-                String message = String.format("x=%f, y=%f, t=%d", entity.getX(), entity.getY(), System.currentTimeMillis());
-                messagingService.writeMessage("move:", message);
-                return true;
-            }
-            return false;
-        });
 
         object.getProperties().put("entity", entity);
 

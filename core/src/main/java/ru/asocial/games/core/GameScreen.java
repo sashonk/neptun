@@ -40,12 +40,8 @@ public class GameScreen extends BaseScreen {
 
     private long lastSeed;
 
-    private IMessageService messagingService;
-
     public GameScreen(IGame game) {
         super(game, 600, 1000);
-
-        this.messagingService = game.getMessagingService();
     }
 
     public void restart(boolean nextLevel) {
@@ -136,7 +132,7 @@ public class GameScreen extends BaseScreen {
 
         Preferences prefs = Gdx.app.getPreferences("neptun");
         entityMatrix = new EntityMatrix(500, 500, getResourcesManager(), prefs.getBoolean("debug"));
-        EntityFactory entityFactory = new EntityFactory(getResourcesManager(), layers, getStage(), messagingService);
+        EntityFactory entityFactory = new EntityFactory(getResourcesManager(), layers, getStage());
 
         MovingBehavior.setObjectMatrix(entityMatrix);
         MovingBehavior.TileLayerChangedListener tileLayerChangedListener = () -> renderer.invalidateCache();
