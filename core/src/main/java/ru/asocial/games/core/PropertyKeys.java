@@ -16,6 +16,12 @@ public class PropertyKeys {
 
     public static final String MOVING_TO = "moving_to";
 
+    public static final String MOVE_FROM = "move_from";
+
+    public static final String MOVE_PROGRESS = "move_progress";
+
+    public static final String MOVE_ACT_FRAME = "move_act_frame";
+
     public static final String IS_WALKING = "is_walking";
 
     public static final String CHASE_CAMERA = "chase_camera";

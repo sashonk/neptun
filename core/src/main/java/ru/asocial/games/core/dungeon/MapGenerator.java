@@ -3,6 +3,7 @@ package ru.asocial.games.core.dungeon;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -106,7 +107,7 @@ public class MapGenerator {
                 Array<TextureRegion> regionArray = skin.getRegions("player/front");
                 TiledMapTile tile = new StaticTiledMapTile(regionArray.get(0));
                 TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
-                fillBaseProperties(o, playerXY.x, playerXY.y, width, height, mapHeight);
+                fillBaseProperties(o, playerXY.x, playerXY.y, width, height);
                 fillDeathSpiritProps(o);
                 wallLayer.getObjects().add(o);
                 handler.playerPlaced(playerXY.x, playerXY.y);
@@ -120,7 +121,7 @@ public class MapGenerator {
                 regionArray.forEach(region -> tileArray.add(new StaticTiledMapTile(region)));
                 TiledMapTile animatedTile = new AnimatedTiledMapTile(1f, tileArray);
                 TiledMapTileMapObject o = new TiledMapTileMapObject(animatedTile, false, false);
-                fillBaseProperties(o, exitPoint.x, exitPoint.y , width, height, mapHeight);
+                fillBaseProperties(o, exitPoint.x, exitPoint.y , width, height);
                 o.getProperties().put("type", "exit");
                 o.getProperties().put(PropertyKeys.ANIMATION, regionArray);
                 wallLayer.getObjects().add(o);
@@ -166,30 +167,13 @@ public class MapGenerator {
                         dirtLayer.setCell(cx, cy, cell);
                     }
                     else {
-                        TiledMapTile tile = new StaticTiledMapTile(skin.getRegion("walls/stone"));
-                        TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
-                        fillBaseProperties(o, cx, cy, width, height, mapHeight);
-                        o.getProperties().put("can_roll", true);
-                        o.getProperties().put("can_fall", true);
-                        o.getProperties().put("type", "stone");
-                        if (rnd.nextBoolean()) {
-                            o.getProperties().put("is_explosive", true);
-                        }
+                        MapObject o = createStone(rnd.nextBoolean(),cx, cy, width, height, skin);
                         wallLayer.getObjects().add(o);
                     }
                 }
                 else {
                     if (rnd.nextBoolean()) {
-                        Array<TextureRegion> regionArray = skin.getRegions("golem/front");
-                        TiledMapTile tile = new StaticTiledMapTile(regionArray.get(0));
-                        TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
-                        fillBaseProperties(o, cx, cy, width, height, mapHeight);
-                        o.getProperties().put("type", "golem");
-                        o.getProperties().put("has_animations",  true);
-                        o.getProperties().put("is_squizable",  true);
-                        o.getProperties().put("is_walking", true);
-                        o.getProperties().put("is_enemy", true);
-                        //o.getProperties().put("is_explosive", true);
+                        MapObject o = createMob(cx, cy, width, height, skin);
                         wallLayer.getObjects().add(o);
                     }
                 }
@@ -207,30 +191,13 @@ public class MapGenerator {
 
                     }
                     else {
-                        TiledMapTile tile = new StaticTiledMapTile(skin.getRegion("walls/stone"));
-                        TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
-                        fillBaseProperties(o, cx, cy, width, height, mapHeight);
-                        o.getProperties().put("can_roll", true);
-                        o.getProperties().put("can_fall", true);
-                        o.getProperties().put("type", "stone");
-                        if (rnd.nextBoolean()) {
-                            o.getProperties().put("is_explosive", true);
-                        }
+                        MapObject o = createStone(rnd.nextBoolean(),cx, cy, width, height, skin);
                         wallLayer.getObjects().add(o);
                     }
                 }
                 else {
                     if (rnd.nextBoolean()) {
-                        Array<TextureRegion> regionArray = skin.getRegions("golem/front");
-                        TiledMapTile tile = new StaticTiledMapTile(regionArray.get(0));
-                        TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
-                        fillBaseProperties(o, cx, cy, width, height, mapHeight);
-                        o.getProperties().put("type", "golem");
-                        o.getProperties().put("has_animations",  true);
-                        o.getProperties().put("is_squizable",  true);
-                        o.getProperties().put("is_walking", true);
-                        o.getProperties().put("is_enemy", true);
-                        //o.getProperties().put("is_explosive", true);
+                        MapObject o = createMob(cx, cy, width, height, skin);
                         wallLayer.getObjects().add(o);
                     }
                 }
@@ -244,31 +211,14 @@ public class MapGenerator {
                         dirtLayer.setCell(cx, cy, cell);
                     }
                     else {
-                        TiledMapTile tile = new StaticTiledMapTile(skin.getRegion("walls/stone"));
-                        TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
-                        fillBaseProperties(o, cx, cy, width, height, mapHeight);
-                        o.getProperties().put("can_roll", true);
-                        o.getProperties().put("can_fall", true);
-                        o.getProperties().put("type", "stone");
-                        if (rnd.nextBoolean()) {
-                            o.getProperties().put("is_explosive", true);
-                        }
+                        MapObject o = createStone(rnd.nextBoolean(),cx, cy, width, height, skin);
+
                         wallLayer.getObjects().add(o);
                     }
                 }
                 else {
                     if (rnd.nextBoolean()) {
-                        Array<TextureRegion> regionArray = skin.getRegions("golem/front");
-                        TiledMapTile tile = new StaticTiledMapTile(regionArray.get(0));
-                        TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
-                        fillBaseProperties(o, cx, cy, width, height, mapHeight);
-                        o.getProperties().put("type", "golem");
-                        o.getProperties().put("has_animations",  true);
-                        o.getProperties().put("is_squizable",  true);
-                        o.getProperties().put("is_walking", true);
-                        o.getProperties().put("is_enemy", true);
-                        //o.getProperties().put("is_explosive", true);
-                        wallLayer.getObjects().add(o);
+                        wallLayer.getObjects().add(createMob(cx, cy, width, height, skin));
                     }
                 }
             }
@@ -305,7 +255,34 @@ public class MapGenerator {
         x++;
     }
 
-    void fillBaseProperties(TiledMapTileMapObject o, int cx, int cy, int width, int height, int mapHeight) {
+    MapObject createMob(int cx, int cy, int width, int height, Skin skin) {
+        Array<TextureRegion> regionArray = skin.getRegions("golem/front");
+        TiledMapTile tile = new StaticTiledMapTile(regionArray.get(0));
+        TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
+        fillBaseProperties(o, cx, cy, width, height);
+        o.getProperties().put("type", "golem");
+        o.getProperties().put("has_animations",  true);
+        o.getProperties().put("is_squizable",  true);
+        o.getProperties().put("is_walking", true);
+        o.getProperties().put("is_enemy", true);
+        //o.getProperties().put("is_explosive", true);
+        return o;
+    }
+
+    MapObject createStone(boolean isExplosive, int cx, int cy, int width, int height, Skin skin) {
+        TiledMapTile tile = new StaticTiledMapTile(skin.getRegion(isExplosive ? "walls/stone_hot" : "walls/stone"));
+        TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
+        fillBaseProperties(o, cx, cy, width, height);
+        o.getProperties().put("can_roll", true);
+        o.getProperties().put("can_fall", true);
+        o.getProperties().put("type", "stone");
+        if (isExplosive) {
+            o.getProperties().put("is_explosive", true);
+        }
+        return o;
+    }
+
+    void fillBaseProperties(TiledMapTileMapObject o, int cx, int cy, int width, int height) {
         o.setX(cx * width);
         o.setY(cy * height);
         o.getProperties().put("width", (float) width);

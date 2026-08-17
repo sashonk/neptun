@@ -1,7 +1,8 @@
 package ru.asocial.games.core;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -11,7 +12,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
 import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -43,7 +43,7 @@ public class GameScreen extends BaseScreen {
     private IMessageService messagingService;
 
     public GameScreen(IGame game) {
-        super(game, 1000, 600);
+        super(game, 600, 1000);
 
         this.messagingService = game.getMessagingService();
     }
@@ -105,6 +105,23 @@ public class GameScreen extends BaseScreen {
         hud.addActor(playerCoors);
         hud.addActor(exitCoors);
 
+        WASDPlayerController wasdController = new WASDPlayerController();
+        HUDPlayerController hudController = new HUDPlayerController(getResourcesManager().getSkin(), hud.getWidth(), hud.getHeight());
+        hudController.setPosition(hud.getWidth() / 2, 200);
+        hud.addActor(hudController);
+        hud.addActor(wasdController);
+        hud.addListener(new InputListener(){
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                if (y > hud.getHeight() / 2) {
+                    Entity player = getStage().getRoot().findActor("deathspirit");
+                    if (player != null) {
+                        getStage().getCamera().position.set(player.getX(), player.getY(), 1);
+                    }
+                }
+                return false;
+            }
+        });
+
         createMapFromDungeonFile(nextLevel);
 
         //MapLayer objectLayer = map.getLayers().get("walls");
@@ -131,65 +148,29 @@ public class GameScreen extends BaseScreen {
             MapObject object = objectIterator.next();
             Entity entity = entityFactory.create(object);
             entityMatrix.take((int) entity.getX() / (int) entity.getWidth(),(int) entity.getY() / (int) entity.getHeight(), entity);
+            if (object.getProperties().get(PropertyKeys.ATTACH_CONTROLLER, false, Boolean.class)) {
+                PlayerBehavior behavior = new PlayerBehavior(layers);
+                behavior.setController(new CombinedPlayerController(hudController, wasdController));
+                FileHandle movesFile = Gdx.files.absolute("D:\\work\\moves.txt");
+                behavior.setMoveCallback(move -> movesFile.writeString(move.toString() + "\r\n", true));
+                entity.addBehaviour(behavior);
+            }
+            if ("player".equals(entity.getProperty(PropertyKeys.TYPE, String.class))) {
+                entity.putProperty("controller", hudController);
+            }
 
             getStage().addActor(entity);
         }
 
+
         getStage().addActor(entityMatrix);
 
-        getStage().getRoot().setTouchable(Touchable.childrenOnly);
+        // getStage().getRoot().setTouchable(Touchable.childrenOnly);
 
         Actor player = getStage().getRoot().findActor("deathspirit");
         if (player != null) {
             getStage().getCamera().position.set(player.getX(), player.getY(), 1);
         }
-
-        getStage().getRoot().addListener(new InputListener() {
-
-            public boolean scrolled (InputEvent event, float x, float y, float amountX, float amountY) {
-                if (amountY > 0) {
-                    Vector3 pos = getStage().getCamera().position;
-                    getStage().getCamera().translate(pos.x, pos.y, pos.z + 0.1f);
-                    return true;
-                }
-                else if (amountY < 0){
-                    Vector3 pos = getStage().getCamera().position;
-                    getStage().getCamera().translate(pos.x, pos.y, pos.z - 0.1f);
-                    return false;
-                }
-                return false;
-            }
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-
-                if (button == Input.Buttons.LEFT) {
-                    if (event.getTarget() instanceof Entity) {
-
-                        Entity entity = (Entity) event.getTarget();
-                        entity.putProperty("test", true);
-                        return true;
-                    }
-                    return false;
-                }
-                else if (button == Input.Buttons.RIGHT) {
-                    if (event.getTarget() instanceof Entity) {
-                        Entity entity = (Entity) event.getTarget();
-                        entityPanel.clearActions();
-                        entityPanel.addAction(Actions.forever(Actions.sequence(new Action() {
-                            @Override
-                            public boolean act(float delta) {
-                                entityPanel.setVisible(true);
-                                entityPanel.init(entity);
-                                return true;
-                            }
-                        }, Actions.delay(0.2f))));
-
-                    }
-                    return true;
-                }
-
-                return false;
-            }
-        });
 
         getStage().addListener(new EventListener() {
             @Override
@@ -247,12 +228,6 @@ public class GameScreen extends BaseScreen {
                 }
                 else if (event instanceof DestroyEntityEvent) {
                     Entity entity = (Entity) event.getTarget();
-                    DestroyEntityEvent destroyEntityEvent = (DestroyEntityEvent) event;
-/*                    if (destroyEntityEvent.isSquized()) {
-                        Entity relatedEntity = destroyEntityEvent.getRelatedEntity();
-                        Collection<Actor> gore = Gore.generateGore(getResourcesManager(), entity, relatedEntity);
-                        gore.forEach(getStage()::addActor);
-                    }*/
                     if ("player".equals(entity.getProperty(PropertyKeys.TYPE, String.class)) ) {
                         //entity.setRotation();
                         getStage().getRoot().fire(new RestartEvent(entity, false));
@@ -280,13 +255,20 @@ public class GameScreen extends BaseScreen {
                     if ("player".equals(entity.getProperty(PropertyKeys.TYPE, String.class)) ) {
                         //entity.setRotation();
                         playerCoors.setText("player " + moveEvent.getX() + ":" + moveEvent.getY());
+
                     }
                 }
                 return false;
             }
         });
 
+        InputMultiplexer p = new InputMultiplexer();
+        p.addProcessor(hud);
+        p.addProcessor(getStage());
+        Gdx.input.setInputProcessor(p);
+
         mapLoaded = true;
+
     }
 
     public void render(float delta) {

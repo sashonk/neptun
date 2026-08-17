@@ -3,6 +3,8 @@ package ru.asocial.games.core;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 
 import java.util.HashMap;
@@ -41,7 +43,8 @@ public class Neptun extends Game implements IGame{
 
 	@Override
 	public void create() {
-		Gdx.graphics.setWindowedMode(1200, 900);
+		//Gdx.graphics.set
+		Gdx.graphics.setWindowedMode(600, 1000);
 
 		//Gdx.graphics.setWindowedMode(1000, 1000);
 
@@ -62,6 +65,18 @@ public class Neptun extends Game implements IGame{
 				//NOOP
 			}
 		};
+
+
+		Preferences keyboard = Gdx.app.getPreferences("keyboard");
+		keyboard.putInteger("up", Input.Keys.W);
+		keyboard.putInteger("left", Input.Keys.A);
+		keyboard.putInteger("down", Input.Keys.S);
+		keyboard.putInteger("right", Input.Keys.D);
+		keyboard.putInteger("action", Input.Keys.SPACE);
+
+		Preferences neptun = Gdx.app.getPreferences("neptun");
+		//neptun.putBoolean("replay", true);
+
 	}
 
 	@Override

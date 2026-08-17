@@ -98,18 +98,18 @@ public class EntityFactory {
 
         if (object.getProperties().get(PropertyKeys.HAS_ANIMATIONS, false, Boolean.class)) {
             Skin skin = resourcesManager.getSkin();
-            float frameDur = 0.1f;
             Array<TextureRegion> regionsFront = resourcesManager.getSkin().getRegions(type+"/front");
+            float frameDur = Config.SINGLE_MOVE_DURATION / regionsFront.size;
             Animation<TextureRegion> front = new Animation<>(frameDur, regionsFront, Animation.PlayMode.LOOP);
 
             Array<TextureRegion> regionsBack = skin.getRegions(type+"/back");
-            Animation<TextureRegion> back = new Animation<>(frameDur,regionsBack, Animation.PlayMode.LOOP);
+            Animation<TextureRegion> back = new Animation<>(frameDur, regionsBack, Animation.PlayMode.LOOP);
 
             Array<TextureRegion> regionsLeft = skin.getRegions(type+"/left");
-            Animation<TextureRegion> left = new Animation<>(frameDur,regionsLeft, Animation.PlayMode.LOOP);
+            Animation<TextureRegion> left = new Animation<>(frameDur, regionsLeft, Animation.PlayMode.LOOP);
 
             Array<TextureRegion> regionsRight = skin.getRegions(type+"/right");
-            Animation<TextureRegion> right = new Animation<>(frameDur,regionsRight, Animation.PlayMode.LOOP);
+            Animation<TextureRegion> right = new Animation<>(frameDur, regionsRight, Animation.PlayMode.LOOP);
 
             Map<String, Animation<TextureRegion>> animationMap = new HashMap<>();
             animationMap.put(EntityOrientation.RIGHT.name(), right);
@@ -157,13 +157,6 @@ public class EntityFactory {
                 ReplayMovesBehavior replayMovesBehavior = new ReplayMovesBehavior(layers, moves);
                 entity.addBehaviour(replayMovesBehavior);
             }
-            else {
-                PlayerBehavior behavior = new PlayerBehavior(layers);
-                FileHandle file = Gdx.files.absolute("D:\\work\\moves.txt");
-                //file.delete();
-                behavior.setMoveCallback(move -> file.writeString(move.toString() + "\r\n", true));
-                entity.addBehaviour(behavior);
-            }
         }
 
         boolean canFall = object.getProperties().get(PropertyKeys.CAN_FALL, false, Boolean.class);
@@ -179,8 +172,11 @@ public class EntityFactory {
         }
 
         entity.addListener(event -> {
-            if (event instanceof EntityEvent) {
-                messagingService.writeMessage(event.getClass().getName(), event.toString());
+            if (event instanceof EntityEvent && object.getProperties().get(PropertyKeys.ATTACH_CONTROLLER, false, Boolean.class)) {
+                //messagingService.writeMessage(event.getClass().getName(), event.toString());
+
+                String message = String.format("x=%f, y=%f, t=%d", entity.getX(), entity.getY(), System.currentTimeMillis());
+                messagingService.writeMessage("move:", message);
                 return true;
             }
             return false;
@@ -190,4 +186,5 @@ public class EntityFactory {
 
         return entity;
     }
+
 }

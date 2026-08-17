@@ -33,7 +33,7 @@ public class AnimatedEntityRenderer implements EntityRenderer{
             entity.putProperty(PropertyKeys.ANIMATION_STATE_TIME, stateTime);
         }
         else {
-            stateTime = currentAnimation.getFrameDuration() + 0.01f;
+            return currentAnimation.getKeyFrame(0);
         }
         return currentAnimation.getKeyFrame(stateTime);
     };

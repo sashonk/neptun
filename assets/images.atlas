@@ -483,10 +483,17 @@ explosion/explosion
   index: 6
 
 images8.png
-size: 64, 64
+size: 128, 128
 format: RGBA8888
 filter: Nearest, Nearest
 repeat: none
+general/coin
+  rotate: false
+  xy: 2, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 general/physical_hazard
   rotate: false
   xy: 2, 2
@@ -752,6 +759,13 @@ walls/179
 walls/stone
   rotate: false
   xy: 152, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+walls/stone_hot
+  rotate: false
+  xy: 202, 2
   size: 48, 48
   orig: 48, 48
   offset: 0, 0

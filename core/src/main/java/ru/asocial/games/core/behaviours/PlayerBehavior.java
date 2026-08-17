@@ -1,7 +1,6 @@
 package ru.asocial.games.core.behaviours;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.math.Vector2;
 import ru.asocial.games.core.*;
@@ -10,29 +9,31 @@ import ru.asocial.games.core.events.RestartEvent;
 
 public class PlayerBehavior extends MovingBehavior{
 
+    private IPlayerController controller;
+
     public PlayerBehavior(Layers layers) {
         super(layers);
     }
 
+    public void setController(IPlayerController controller) {
+        this.controller = controller;
+    }
+
     protected Vector2 doFindNextMove() {
         Vector2 move = null;
-        Preferences keyboardKeys = Gdx.app.getPreferences("keyboard");
-        int keyUp = keyboardKeys.getInteger("up");
-        int keyDown = keyboardKeys.getInteger("down");
-        int keyLeft = keyboardKeys.getInteger("left");
-        int keyRight = keyboardKeys.getInteger("right");
-
-        if (Gdx.input.isKeyPressed(keyUp)) {
-            move = new Vector2(0, 1);
-        }
-        else if (Gdx.input.isKeyPressed(keyDown)) {
-            move = new Vector2(0, -1);
-        }
-        else if (Gdx.input.isKeyPressed(keyRight)) {
-            move = new Vector2(1, 0);
-        }
-        else if (Gdx.input.isKeyPressed(keyLeft)) {
-            move = new Vector2(-1, 0);
+        if (controller != null) {
+            if (controller.isUpPressed()) {
+                move = new Vector2(0, 1);
+            }
+            else if (controller.isDownPressed()) {
+                move = new Vector2(0, -1);
+            }
+            else if (controller.isRightPressed()) {
+                move = new Vector2(1, 0);
+            }
+            else if (controller.isLeftPressed()) {
+                move = new Vector2(-1, 0);
+            }
         }
 
         return move;
@@ -42,7 +43,7 @@ public class PlayerBehavior extends MovingBehavior{
     public void act(Entity entity, float delta) {
         super.act(entity, delta);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.C)) {
+        if (controller != null && controller.isBombPressed()) {
             Float bombRegenTime =  entity.getPropertyOrDefault("bomb_regen_time", Float.class, 0f);
             if (bombRegenTime <= 0) {
                 entity.putProperty("bomb_regen_time", 3f);
