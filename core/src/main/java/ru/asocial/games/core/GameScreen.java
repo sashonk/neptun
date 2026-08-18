@@ -39,7 +39,8 @@ public class GameScreen extends BaseScreen {
 
     private EntityMatrix entityMatrix;
 
-    private long lastSeed;
+    private final MapGenerator mapGenerator = new MapGenerator();
+    private long levelSeed;
 
     private final FrameProfiler frameProfiler = new FrameProfiler();
     private boolean metricsEnabled;
@@ -75,15 +76,18 @@ public class GameScreen extends BaseScreen {
         mapLoaded = false;
     }
 
-    private void createMapFromDungeonFile(boolean next) {
-        MapGenerator mapGenerator = new MapGenerator();
+    private void createMapFromDungeonFile(boolean nextLevel) {
+        if (nextLevel || levelSeed == 0) {
+            levelSeed = System.nanoTime();
+        }
+
         Preferences prefs = Gdx.app.getPreferences("neptun");
         if (prefs.getBoolean("map300") || Neptun.hasLaunchArg("map300")) {
             mapGenerator.setFixedDungeonFile("dungeons/300.txt", 300);
         } else if (prefs.getBoolean("map150") || Neptun.hasLaunchArg("map150")) {
             mapGenerator.setFixedDungeonFile("dungeons/150.txt", 150);
         }
-        map = mapGenerator.generateMap(next, getResourcesManager().getSkin(), new MapGenerator.EventHandler() {
+        map = mapGenerator.generateMap(nextLevel, levelSeed, getResourcesManager().getSkin(), new MapGenerator.EventHandler() {
             @Override
             public void exitPlaced(int x, int y) {
                 exitCoors.setText("exit " + x + ":" + y);
@@ -91,9 +95,11 @@ public class GameScreen extends BaseScreen {
 
             @Override
             public void playerPlaced(int x, int y) {
-                playerCoors.setText("player " + x + ":" + y);
+                playerCoors.setText("player " + x + ":" + y + " seed " + levelSeed);
             }
         });
+        levelSeed = mapGenerator.getCurrentSeed();
+        Gdx.app.log("GameScreen", "level seed: " + levelSeed);
     }
 
     private void createMapFromTmx() {
@@ -146,8 +152,7 @@ public class GameScreen extends BaseScreen {
         Preferences prefs = Gdx.app.getPreferences("neptun");
         boolean map300 = prefs.getBoolean("map300") || Neptun.hasLaunchArg("map300");
         boolean map150 = prefs.getBoolean("map150") || Neptun.hasLaunchArg("map150");
-        metricsEnabled = prefs.getBoolean("metrics") || prefs.getBoolean("debug")
-                || Neptun.hasLaunchArg("metrics") || Neptun.hasLaunchArg("debug");
+        metricsEnabled = prefs.getBoolean("metrics");
         if (metricsEnabled) {
             metricsLabel = new Label("metrics...", getResourcesManager().getSkin());
             metricsLabel.setAlignment(Align.topLeft);

@@ -41,6 +41,10 @@ public class MapGenerator {
 
     private int x;
 
+    private long currentSeed;
+
+    private List<String> cachedTopologyLines;
+
     public interface EventHandler {
         void exitPlaced(int x, int y);
 
@@ -54,14 +58,21 @@ public class MapGenerator {
         this.layerHeight = mapSize + 50;
     }
 
+    public long getCurrentSeed() {
+        return currentSeed;
+    }
+
     private final List<GridPoint2> exitPoints = new LinkedList<>();
 
-    public TiledMap generateMap(boolean next, Skin skin, EventHandler handler) {
+    public TiledMap generateMap(boolean nextLevel, long seed, Skin skin, EventHandler handler) {
         x = 0;
         exitPoints.clear();
+        currentSeed = seed;
+        if (nextLevel) {
+            level++;
+        }
+
         TiledMap tiledMap = new TiledMap();
-/*            MapLayer mainLayer = new MapGroupLayer();
-            mainLayer.setName("main");*/
         int layerWidth = this.layerWidth, layerHeight = this.layerHeight;
         int tileWidth = 48, tileHeight = 48;
         TiledMapTileLayer imageLayer = new TiledMapTileLayer(layerWidth, layerHeight, tileWidth, tileHeight);
@@ -74,53 +85,18 @@ public class MapGenerator {
         tiledMap.getLayers().add(imageLayer);
         tiledMap.getLayers().add(wallLayer);
         tiledMap.getLayers().add(dirtLayer);
-        if (next) {
-            level++;
-        }
-        Random rnd = new Random(System.currentTimeMillis());
 
-        BufferedReader br = null;
+        Random rnd = new Random(currentSeed);
+
         try {
-            if (fixedDungeonFile != null) {
-                FileHandle dungFile = Gdx.files.internal(fixedDungeonFile);
-                br = dungFile.reader(1024);
-            }
-            else if (generateRandomMaps) {
-                int digit = rnd.nextInt(1, 4);
-                String letter = rnd.nextBoolean() ? "a" : "b";
-                FileHandle designFile = Gdx.files.internal("designs/design3a");
-                FileHandle tmp = FileHandle.tempFile("design");
-                designFile.copyTo(tmp);
-                //String designFileName = "C:\\Users\\user\\Downloads\\dmaker\\dungeonmaker2_0WinExe\\design";
-                String designFileName = tmp.path();
-                String dungeonFileName = FileHandle.tempFile("dungeon").path();
-                File dungeonFile = new File(dungeonFileName);
-/*                try {
-                    if (!dungeonFile.createNewFile()) {
-                        throw new GdxRuntimeException("can't create file: " + dungeonFile.getPath());
-                    }
-                }
-                catch (Exception exc) {
-                    throw new GdxRuntimeException("can't create file: " + dungeonFile.getPath(), exc);
-                }*/
-                DungeonMaker dungeonMaker = new DungeonMaker();
-                dungeonMaker.generateDungeon(designFileName, dungeonFileName);
-                br = Files.newBufferedReader(dungeonFile.toPath());
-            }
-            else {
-                FileHandle dungFile = Gdx.files.internal(String.format("dungeons/%d.txt", level));
-                br = dungFile.reader(1024);
-            }
-
+            List<String> lines = loadTopologyLines(nextLevel);
             int width = 48, height = 48;
-            List<String> lines = br.lines().collect(Collectors.toList());
             int mapHeight = lines.size();
             int mapWidth = lines.get(0).split(",").length;
 
             lines.forEach(line -> processLine(line, width, height, mapWidth, mapHeight, wallLayer, dirtLayer, imageLayer, skin, rnd, handler));
 
             {
-                // Player
                 playerXY = exitPoints.remove(rnd.nextInt(exitPoints.size()));
                 Array<TextureRegion> regionArray = skin.getRegions("player/front");
                 TiledMapTile tile = new StaticTiledMapTile(regionArray.get(0));
@@ -132,7 +108,6 @@ public class MapGenerator {
             }
 
             {
-                //Exit
                 GridPoint2 exitPoint = exitPoints.remove(rnd.nextInt(exitPoints.size()));
                 Array<TextureRegion> regionArray = skin.getRegions("doors/19/door");
                 Array<StaticTiledMapTile> tileArray = new Array<>();
@@ -146,20 +121,46 @@ public class MapGenerator {
                 handler.exitPlaced(exitPoint.x, exitPoint.y);
             }
 
+            Gdx.app.log("MapGenerator", "generated level with seed " + currentSeed
+                    + (nextLevel ? " (next level)" : " (restart)"));
             return tiledMap;
         }
         catch (Exception ex) {
             throw new GdxRuntimeException(ex);
         }
-        finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+    }
+
+    private List<String> loadTopologyLines(boolean nextLevel) throws IOException {
+        if (!nextLevel && cachedTopologyLines != null) {
+            return cachedTopologyLines;
+        }
+
+        List<String> lines;
+        if (fixedDungeonFile != null) {
+            try (BufferedReader br = Gdx.files.internal(fixedDungeonFile).reader(1024)) {
+                lines = br.lines().collect(Collectors.toList());
             }
         }
+        else if (generateRandomMaps) {
+            FileHandle designFile = Gdx.files.internal("designs/design3a");
+            FileHandle tmp = FileHandle.tempFile("design");
+            designFile.copyTo(tmp);
+            String designFileName = tmp.path();
+            String dungeonFileName = FileHandle.tempFile("dungeon").path();
+            DungeonMaker dungeonMaker = new DungeonMaker();
+            dungeonMaker.generateDungeon(designFileName, dungeonFileName);
+            try (BufferedReader br = Files.newBufferedReader(new File(dungeonFileName).toPath())) {
+                lines = br.lines().collect(Collectors.toList());
+            }
+        }
+        else {
+            try (BufferedReader br = Gdx.files.internal(String.format("dungeons/%d.txt", level)).reader(1024)) {
+                lines = br.lines().collect(Collectors.toList());
+            }
+        }
+
+        cachedTopologyLines = lines;
+        return lines;
     }
 
     void processLine(String line, int width, int height, int mapWidth, int mapHeight, TiledMapTileLayer wallLayer, TiledMapTileLayer dirtLayer,
@@ -174,7 +175,6 @@ public class MapGenerator {
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
                 cell.setTile(tile);
                 wallLayer.setCell(cx, cy, cell);
-                //aStar.setBlock(x, y);
             }
             else if ( type == SquareData.IR_OPEN.ordinal()  && y > 5 && y < mapWidth - 6) {
                 if (rnd.nextFloat() < 0.9f) {
@@ -247,7 +247,6 @@ public class MapGenerator {
                     TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
                     cell.setTile(tile);
                     wallLayer.setCell(cx, cy, cell);
-                    //imageLayer.setCell(cx, cy);
                 }
                 else {
                     boolean alreadyExists = false;
@@ -283,7 +282,6 @@ public class MapGenerator {
         o.getProperties().put("is_squizable",  true);
         o.getProperties().put("is_walking", true);
         o.getProperties().put("is_enemy", true);
-        //o.getProperties().put("is_explosive", true);
         return o;
     }
 

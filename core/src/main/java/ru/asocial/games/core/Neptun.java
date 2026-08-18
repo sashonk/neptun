@@ -65,23 +65,11 @@ public class Neptun extends Game implements IGame{
 		keyboard.putInteger("action", Input.Keys.SPACE);
 
 		Preferences neptun = Gdx.app.getPreferences("neptun");
-		for (String arg : launchArgs) {
-			if ("replay".equals(arg)) {
-				neptun.putBoolean("replay", true);
-			}
-			if ("debug".equals(arg)) {
-				neptun.putBoolean("debug", true);
-			}
-			if ("metrics".equals(arg)) {
-				neptun.putBoolean("metrics", true);
-			}
-			if ("map150".equals(arg)) {
-				neptun.putBoolean("map150", true);
-			}
-			if ("map300".equals(arg)) {
-				neptun.putBoolean("map300", true);
-			}
-		}
+		neptun.putBoolean("replay", hasLaunchArg("replay"));
+		neptun.putBoolean("debug", hasLaunchArg("debug"));
+		neptun.putBoolean("metrics", hasLaunchArg("metrics"));
+		neptun.putBoolean("map150", hasLaunchArg("map150"));
+		neptun.putBoolean("map300", hasLaunchArg("map300"));
 		neptun.flush();
 	}
 
