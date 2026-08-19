@@ -54,11 +54,15 @@ public class FallingBehavior extends MovingBehavior{
 
             if (e.getPropertyOrDefault(PropertyKeys.IS_SQUIZABLE, Boolean.class, false)) {
                 freeObject(e);
-                e.addAction(Actions.removeActor());
                 DestroyEntityEvent event = new DestroyEntityEvent();
                 event.setRelatedEntity(entity);
                 event.setSquized(true);
-                e.fire(event);
+                if ("player".equals(e.getProperty(PropertyKeys.TYPE, String.class))) {
+                    e.fire(event);
+                } else {
+                    e.addAction(Actions.removeActor());
+                    e.fire(event);
+                }
             }
         }
 

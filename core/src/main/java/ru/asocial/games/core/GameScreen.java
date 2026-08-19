@@ -268,9 +268,14 @@ public class GameScreen extends BaseScreen {
                     }
                 }
                 else if (event instanceof DestroyEntityEvent) {
+                    DestroyEntityEvent destroyEvent = (DestroyEntityEvent) event;
                     Entity entity = (Entity) event.getTarget();
                     if ("player".equals(entity.getProperty(PropertyKeys.TYPE, String.class))) {
                         if (entity.getPropertyOrDefault("is_capturing", Boolean.class, false)) {
+                            return false;
+                        }
+                        if (destroyEvent.isSquized()) {
+                            playSquishDeath(entity, destroyEvent.getRelatedEntity());
                             return false;
                         }
                         float delay = entity.getPropertyOrDefault("is_dead", Boolean.class, false) ? 0.2f : 1f;
@@ -413,6 +418,33 @@ public class GameScreen extends BaseScreen {
                         )
                 ),
                 Actions.run(() -> finishPlayerDeath(player, false, 0.35f))
+        ));
+    }
+
+    private void playSquishDeath(Entity player, Entity stone) {
+        player.putProperty("is_capturing", true);
+        stopEntityMotion(player);
+        player.removeBehaviours(PlayerBehavior.class);
+        player.clearActions();
+        player.getColor().a = 1f;
+        player.setRotation(0f);
+        player.setScale(1f, 1f);
+        player.putProperty(PropertyKeys.IS_ANIMATION_RUNNING, false);
+
+        float cellW = player.getWidth();
+        float cellH = player.getHeight();
+        if (stone != null) {
+            player.setPosition(stone.getX(), stone.getY() - cellH);
+            player.toBack();
+        }
+
+        player.addAction(Actions.sequence(
+                Actions.parallel(
+                        Actions.scaleTo(1.4f, 0.18f, 0.14f),
+                        Actions.moveBy(0f, -6f, 0.14f)
+                ),
+                Actions.delay(0.5f),
+                Actions.run(() -> finishPlayerDeath(player, false, 0.3f))
         ));
     }
 
