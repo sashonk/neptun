@@ -1,0 +1,14 @@
+Ближайшие задачи (5–10). Детали и идеи — docs/IDEAS.md
+
+1. start menu
+2. ключ → дверь (P1, см. IDEAS.md)
+3. чеклист целей в HUD (P1)
+4. labels for control buttons
+5. bomb button: icon + disable + countdown until next bomb
+6. экран «уровень пройден» вместо мгновенного рестарта
+7. убить всех големов как условие exit (P1)
+8. build dungeon maker for android
+
+Сделано:
+- RND fixed seed / restart same level after death
+- metrics flag sync, draw culling, maps 150/300

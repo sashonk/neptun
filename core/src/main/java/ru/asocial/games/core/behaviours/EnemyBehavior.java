@@ -1,10 +1,8 @@
 package ru.asocial.games.core.behaviours;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.Entity;
 import ru.asocial.games.core.EntityMatrix;
-import ru.asocial.games.core.EntityMatrixUtils;
 import ru.asocial.games.core.PropertyKeys;
 import ru.asocial.games.core.events.PlayerKilledEvent;
 
@@ -33,10 +31,10 @@ public class EnemyBehavior implements Behaviour {
         };
         Arrays.stream(vv).forEach(v -> {
             Entity e = getObjectAtCell(entity, v);
-            if (e != null && "player".equals(e.getProperty(PropertyKeys.TYPE, String.class)) && !e.getPropertyOrDefault("is_dead", Boolean.class, false)) {
-                //EntityMatrixUtils.freeObject(matrix, e);
-                //e.addAction(Actions.removeActor());
-                e.fire(new PlayerKilledEvent(e));
+            if (e != null && "player".equals(e.getProperty(PropertyKeys.TYPE, String.class))
+                    && !e.getPropertyOrDefault("is_dead", Boolean.class, false)
+                    && !e.getPropertyOrDefault("is_capturing", Boolean.class, false)) {
+                e.fire(new PlayerKilledEvent(e, entity));
             }
         });
     }

@@ -35,14 +35,18 @@ public class EntityFactory {
     }
 
     public Entity newExplosion(Entity center, int offsetX, int offsetY) {
+        return newExplosionAt(center.getX() + center.getWidth() * offsetX, center.getY() + center.getHeight() * offsetY, 0.2f);
+    }
+
+    public Entity newExplosionAt(float x, float y, float lifetime) {
         Entity explosion = new Entity();
         float width = 48, height = 48;
-        explosion.setBounds(center.getX() + width * offsetX, center.getY() + height * offsetY, width, height);
+        explosion.setBounds(x, y, width, height);
         explosion.setRenderer(new AnimatedEntityRenderer());
         Animation<TextureRegion> animation = new Animation<>(0.04f, resourcesManager.getSkin().getRegions("explosion/explosion"));
         explosion.putProperty(PropertyKeys.ANIMATION, animation);
         explosion.putProperty(PropertyKeys.IS_ANIMATION_RUNNING, true);
-        explosion.addBehaviour(new LimitedLifeTimeBehavior(0.2f));
+        explosion.addBehaviour(new LimitedLifeTimeBehavior(lifetime));
         return explosion;
     }
 

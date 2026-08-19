@@ -5,12 +5,18 @@ import ru.asocial.games.core.Entity;
 
 public class RestartEvent extends Event {
 
-    private Entity player;
-    private boolean nextLvl;
+    private final Entity player;
+    private final boolean nextLvl;
+    private final float restartDelay;
 
     public RestartEvent(Entity player, boolean nextLevel) {
+        this(player, nextLevel, nextLevel ? 1f : 1f);
+    }
+
+    public RestartEvent(Entity player, boolean nextLevel, float restartDelay) {
         this.player = player;
         this.nextLvl = nextLevel;
+        this.restartDelay = restartDelay;
     }
 
     public Entity getPlayer() {
@@ -19,5 +25,9 @@ public class RestartEvent extends Event {
 
     public boolean isNextLvl() {
         return nextLvl;
+    }
+
+    public float getRestartDelay() {
+        return restartDelay;
     }
 }

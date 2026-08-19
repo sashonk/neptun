@@ -68,6 +68,7 @@ public class Neptun extends Game implements IGame{
 		neptun.putBoolean("replay", hasLaunchArg("replay"));
 		neptun.putBoolean("debug", hasLaunchArg("debug"));
 		neptun.putBoolean("metrics", hasLaunchArg("metrics"));
+		neptun.putBoolean("map40", hasLaunchArg("map40"));
 		neptun.putBoolean("map150", hasLaunchArg("map150"));
 		neptun.putBoolean("map300", hasLaunchArg("map300"));
 		neptun.flush();

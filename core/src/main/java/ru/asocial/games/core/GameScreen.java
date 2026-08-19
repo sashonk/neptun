@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.Align;
 import ru.asocial.games.core.behaviours.EnemyBehavior;
 import ru.asocial.games.core.behaviours.MovingBehavior;
 import ru.asocial.games.core.behaviours.PlayerBehavior;
+import ru.asocial.games.core.behaviours.WalkingBehaviour;
 import ru.asocial.games.core.dungeon.MapGenerator;
 import ru.asocial.games.core.events.*;
 
@@ -39,12 +40,16 @@ public class GameScreen extends BaseScreen {
 
     private EntityMatrix entityMatrix;
 
+    private EntityFactory entityFactory;
+
     private final MapGenerator mapGenerator = new MapGenerator();
     private long levelSeed;
 
     private final FrameProfiler frameProfiler = new FrameProfiler();
     private boolean metricsEnabled;
     private Label metricsLabel;
+
+    private boolean levelRestartScheduled;
 
     public GameScreen(IGame game) {
         super(game, 600, 1000);
@@ -56,6 +61,7 @@ public class GameScreen extends BaseScreen {
     }
 
     public void clear() {
+        levelRestartScheduled = false;
         if (entityMatrix != null) {
             entityMatrix.freeAll();
         }
@@ -86,6 +92,8 @@ public class GameScreen extends BaseScreen {
             mapGenerator.setFixedDungeonFile("dungeons/300.txt", 300);
         } else if (prefs.getBoolean("map150") || Neptun.hasLaunchArg("map150")) {
             mapGenerator.setFixedDungeonFile("dungeons/150.txt", 150);
+        } else if (prefs.getBoolean("map40") || Neptun.hasLaunchArg("map40")) {
+            mapGenerator.setFixedDungeonFile("dungeons/40.txt", 40);
         }
         map = mapGenerator.generateMap(nextLevel, levelSeed, getResourcesManager().getSkin(), new MapGenerator.EventHandler() {
             @Override
@@ -152,6 +160,7 @@ public class GameScreen extends BaseScreen {
         Preferences prefs = Gdx.app.getPreferences("neptun");
         boolean map300 = prefs.getBoolean("map300") || Neptun.hasLaunchArg("map300");
         boolean map150 = prefs.getBoolean("map150") || Neptun.hasLaunchArg("map150");
+        boolean map40 = prefs.getBoolean("map40") || Neptun.hasLaunchArg("map40");
         metricsEnabled = prefs.getBoolean("metrics");
         if (metricsEnabled) {
             metricsLabel = new Label("metrics...", getResourcesManager().getSkin());
@@ -162,9 +171,9 @@ public class GameScreen extends BaseScreen {
             Gdx.app.log("GameScreen", "metrics overlay enabled");
         }
 
-        int matrixSize = map300 ? 350 : map150 ? 200 : 500;
+        int matrixSize = map300 ? 350 : map150 ? 200 : map40 ? 90 : 500;
         entityMatrix = new EntityMatrix(matrixSize, matrixSize, getResourcesManager(), prefs.getBoolean("debug"));
-        EntityFactory entityFactory = new EntityFactory(getResourcesManager(), layers, getStage());
+        entityFactory = new EntityFactory(getResourcesManager(), layers, getStage());
 
         MovingBehavior.setObjectMatrix(entityMatrix);
         MovingBehavior.TileLayerChangedListener tileLayerChangedListener = this::invalidateMapCache;
@@ -204,14 +213,8 @@ public class GameScreen extends BaseScreen {
             @Override
             public boolean handle(Event event) {
                 if (event instanceof RestartEvent) {
-                    Action delay = Actions.delay(1, new Action() {
-                        @Override
-                        public boolean act(float delta) {
-                            GameScreen.this.restart(((RestartEvent) event).isNextLvl());
-                            return true;
-                        }
-                    });
-                    getStage().addAction(delay);
+                    RestartEvent restartEvent = (RestartEvent) event;
+                    scheduleLevelRestart(restartEvent.isNextLvl(), restartEvent.getRestartDelay());
                 }
                 if (event instanceof ExplodeEntityEvent) {
                     Entity explosive = (Entity) event.getTarget();
@@ -224,6 +227,16 @@ public class GameScreen extends BaseScreen {
                                 if (e1.getPropertyOrDefault(PropertyKeys.IS_EXPLOSIVE, Boolean.class, false)
                                         && !e1.getPropertyOrDefault("is_exploding", Boolean.class, false)) {
                                     e1.fire(new ExplodeEntityEvent());
+                                    continue;
+                                }
+
+                                if ("player".equals(e1.getProperty(PropertyKeys.TYPE, String.class))) {
+                                    if (e1.getPropertyOrDefault("is_dead", Boolean.class, false)
+                                            || e1.getPropertyOrDefault("is_capturing", Boolean.class, false)) {
+                                        continue;
+                                    }
+                                    EntityMatrixUtils.freeObject(entityMatrix, e1);
+                                    playExplosionDeath(e1, explosive);
                                     continue;
                                 }
 
@@ -256,20 +269,22 @@ public class GameScreen extends BaseScreen {
                 }
                 else if (event instanceof DestroyEntityEvent) {
                     Entity entity = (Entity) event.getTarget();
-                    if ("player".equals(entity.getProperty(PropertyKeys.TYPE, String.class)) ) {
-                        //entity.setRotation();
-                        getStage().getRoot().fire(new RestartEvent(entity, false));
+                    if ("player".equals(entity.getProperty(PropertyKeys.TYPE, String.class))) {
+                        if (entity.getPropertyOrDefault("is_capturing", Boolean.class, false)) {
+                            return false;
+                        }
+                        float delay = entity.getPropertyOrDefault("is_dead", Boolean.class, false) ? 0.2f : 1f;
+                        scheduleLevelRestart(false, delay);
                     }
                 }
                 else if (event instanceof PlayerKilledEvent) {
                     PlayerKilledEvent playerKilledEvent = (PlayerKilledEvent) event;
-                    Entity e = playerKilledEvent.getVictim();
-                    //e.setRotation(90);
-                    e.addAction(Actions.rotateBy(90, 1));
-                    e.putProperty(PropertyKeys.IS_MOVING, false);
-                    e.removeBehaviours(PlayerBehavior.class);
-                    e.putProperty("is_dead", true);
-                    e.fire(new RestartEvent(e, false));
+                    Entity player = playerKilledEvent.getVictim();
+                    if (player.getPropertyOrDefault("is_dead", Boolean.class, false)
+                            || player.getPropertyOrDefault("is_capturing", Boolean.class, false)) {
+                        return false;
+                    }
+                    playGolemCaptureDeath(player, playerKilledEvent.getKiller());
                 }
                 else if (event instanceof PlaceBombEvent) {
                     PlaceBombEvent placeBombEvent = (PlaceBombEvent) event;
@@ -300,6 +315,173 @@ public class GameScreen extends BaseScreen {
 
         mapLoaded = true;
 
+    }
+
+    private void playGolemCaptureDeath(Entity player, Entity golem) {
+        player.putProperty("is_capturing", true);
+        stopEntityMotion(player);
+        player.removeBehaviours(PlayerBehavior.class);
+        player.clearActions();
+
+        float cellW = player.getWidth();
+        float cellH = player.getHeight();
+
+        if (golem != null) {
+            stopEntityMotion(golem);
+            golem.removeBehaviours(WalkingBehaviour.class);
+            golem.removeBehaviours(EnemyBehavior.class);
+            golem.clearActions();
+
+            snapCapturePair(player, golem, cellW, cellH);
+
+            EntityOrientation towardPlayer = orientationToward(golem.getX(), golem.getY(), player.getX(), player.getY());
+            golem.putProperty(PropertyKeys.ORIENTATION, towardPlayer.name());
+            golem.putProperty(PropertyKeys.IS_ANIMATION_RUNNING, false);
+            golem.putProperty(PropertyKeys.ANIMATION_STATE_TIME, 0f);
+
+            golem.addAction(Actions.sequence(
+                    Actions.scaleTo(1.08f, 1.08f, 0.1f),
+                    Actions.scaleTo(1f, 1f, 0.55f)
+            ));
+        }
+
+        player.putProperty(PropertyKeys.IS_ANIMATION_RUNNING, false);
+        player.putProperty(PropertyKeys.ANIMATION_STATE_TIME, 0f);
+
+        float shakeX = 0f;
+        float shakeY = 0f;
+        if (golem != null) {
+            float dx = golem.getX() - player.getX();
+            float dy = golem.getY() - player.getY();
+            if (Math.abs(dx) >= Math.abs(dy)) {
+                shakeX = Math.signum(dx) * 6f;
+            } else {
+                shakeY = Math.signum(dy) * 6f;
+            }
+        } else {
+            shakeX = 6f;
+        }
+
+        Action shake = Actions.repeat(4, Actions.sequence(
+                Actions.moveBy(shakeX, shakeY, 0.05f),
+                Actions.moveBy(-shakeX, -shakeY, 0.05f)
+        ));
+
+        player.addAction(Actions.sequence(
+                shake,
+                Actions.rotateBy(90, 0.3f),
+                Actions.run(() -> finishPlayerDeath(player, false, 0.2f))
+        ));
+    }
+
+    private void playExplosionDeath(Entity player, Entity epicenter) {
+        player.putProperty("is_capturing", true);
+        stopEntityMotion(player);
+        player.removeBehaviours(PlayerBehavior.class);
+        player.clearActions();
+        player.getColor().a = 1f;
+        player.setScale(1f, 1f);
+        player.setRotation(0f);
+        Entity flash = entityFactory.newExplosionAt(player.getX(), player.getY(), 0.55f);
+        getStage().addActor(flash);
+        player.toFront();
+
+        float dx = player.getX() - epicenter.getX();
+        float dy = player.getY() - epicenter.getY();
+        float len = (float) Math.sqrt(dx * dx + dy * dy);
+        if (len < 1f) {
+            dx = 0f;
+            dy = 1f;
+            len = 1f;
+        }
+        float knock = 56f;
+        float kx = dx / len * knock;
+        float ky = dy / len * knock;
+
+        player.addAction(Actions.sequence(
+                Actions.scaleTo(1.25f, 1.25f, 0.12f),
+                Actions.parallel(
+                        Actions.moveBy(kx, ky, 0.4f),
+                        Actions.sequence(
+                                Actions.delay(0.08f),
+                                Actions.fadeOut(0.65f)
+                        ),
+                        Actions.rotateBy(180, 0.45f),
+                        Actions.sequence(
+                                Actions.delay(0.25f),
+                                Actions.scaleTo(0.5f, 0.5f, 0.35f)
+                        )
+                ),
+                Actions.run(() -> finishPlayerDeath(player, false, 0.35f))
+        ));
+    }
+
+    private void finishPlayerDeath(Entity player, boolean nextLevel, float restartDelay) {
+        player.putProperty("is_dead", true);
+        player.removeProperty("is_capturing");
+        scheduleLevelRestart(nextLevel, restartDelay);
+    }
+
+    private void scheduleLevelRestart(boolean nextLevel, float delay) {
+        if (levelRestartScheduled) {
+            return;
+        }
+        levelRestartScheduled = true;
+        final boolean next = nextLevel;
+        getStage().addAction(Actions.sequence(
+                Actions.delay(delay),
+                Actions.run(() -> {
+                    if (!levelRestartScheduled) {
+                        return;
+                    }
+                    levelRestartScheduled = false;
+                    GameScreen.this.restart(next);
+                })
+        ));
+    }
+
+    private void stopEntityMotion(Entity entity) {
+        entity.putProperty(PropertyKeys.IS_MOVING, false);
+        entity.putProperty(PropertyKeys.IS_ANIMATION_RUNNING, false);
+        entity.putProperty(PropertyKeys.MOVE_PROGRESS, 0f);
+        entity.removeProperty(PropertyKeys.MOVING_TO);
+        entity.removeProperty(PropertyKeys.MOVE_FROM);
+    }
+
+    /**
+     * Aligns sprites on adjacent cell centers. Needed because grid logic can place the player
+     * one cell ahead while the move tween is still in progress.
+     */
+    private void snapCapturePair(Entity player, Entity golem, float cellW, float cellH) {
+        int golemCx = Math.round(golem.getX() / cellW);
+        int golemCy = Math.round(golem.getY() / cellH);
+        int playerCx = Math.round(player.getX() / cellW);
+        int playerCy = Math.round(player.getY() / cellH);
+
+        int dx = Integer.compare(playerCx, golemCx);
+        int dy = Integer.compare(playerCy, golemCy);
+        if (dx != 0 && dy != 0) {
+            if (Math.abs(playerCx - golemCx) >= Math.abs(playerCy - golemCy)) {
+                dy = 0;
+            } else {
+                dx = 0;
+            }
+        }
+        if (dx == 0 && dy == 0) {
+            dx = 1;
+        }
+
+        golem.setPosition(golemCx * cellW, golemCy * cellH);
+        player.setPosition((golemCx + dx) * cellW, (golemCy + dy) * cellH);
+    }
+
+    private EntityOrientation orientationToward(float fromX, float fromY, float toX, float toY) {
+        float dx = toX - fromX;
+        float dy = toY - fromY;
+        if (Math.abs(dx) >= Math.abs(dy)) {
+            return EntityOrientation.fromMoveDirection(dx >= 0 ? EntityMove.RIGHT : EntityMove.LEFT);
+        }
+        return EntityOrientation.fromMoveDirection(dy >= 0 ? EntityMove.UP : EntityMove.DOWN);
     }
 
     private void invalidateMapCache() {

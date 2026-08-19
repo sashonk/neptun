@@ -47,7 +47,9 @@ public class Entity extends Actor {
         if (!DrawCuller.isVisible(this)) {
             return;
         }
-        renderer.render(this, batch, parentAlpha);
+        batch.setColor(getColor().r, getColor().g, getColor().b, getColor().a * parentAlpha);
+        renderer.render(this, batch, 1f);
+        batch.setColor(1f, 1f, 1f, 1f);
     }
 
     @Override
