@@ -49,6 +49,8 @@ public class MapGenerator {
         void exitPlaced(int x, int y);
 
         void playerPlaced(int x, int y);
+
+        void keyPlaced(int x, int y);
     }
 
     public void setFixedDungeonFile(String fixedDungeonFile, int mapSize) {
@@ -63,10 +65,12 @@ public class MapGenerator {
     }
 
     private final List<GridPoint2> exitPoints = new LinkedList<>();
+    private final List<GridPoint2> keyCandidates = new LinkedList<>();
 
     public TiledMap generateMap(boolean nextLevel, long seed, Skin skin, EventHandler handler) {
         x = 0;
         exitPoints.clear();
+        keyCandidates.clear();
         currentSeed = seed;
         if (nextLevel) {
             level++;
@@ -98,6 +102,7 @@ public class MapGenerator {
 
             {
                 playerXY = exitPoints.remove(rnd.nextInt(exitPoints.size()));
+                removeCell(keyCandidates, playerXY);
                 Array<TextureRegion> regionArray = skin.getRegions("player/front");
                 TiledMapTile tile = new StaticTiledMapTile(regionArray.get(0));
                 TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
@@ -109,6 +114,7 @@ public class MapGenerator {
 
             {
                 GridPoint2 exitPoint = exitPoints.remove(rnd.nextInt(exitPoints.size()));
+                removeCell(keyCandidates, exitPoint);
                 Array<TextureRegion> regionArray = skin.getRegions("doors/19/door");
                 Array<StaticTiledMapTile> tileArray = new Array<>();
                 regionArray.forEach(region -> tileArray.add(new StaticTiledMapTile(region)));
@@ -119,6 +125,17 @@ public class MapGenerator {
                 o.getProperties().put(PropertyKeys.ANIMATION, regionArray);
                 wallLayer.getObjects().add(o);
                 handler.exitPlaced(exitPoint.x, exitPoint.y);
+            }
+
+            if (!keyCandidates.isEmpty()) {
+                GridPoint2 keyPoint = keyCandidates.remove(rnd.nextInt(keyCandidates.size()));
+                MapObject keyObject = createKey(keyPoint.x, keyPoint.y, width, height, skin);
+                wallLayer.getObjects().add(keyObject);
+                handler.keyPlaced(keyPoint.x, keyPoint.y);
+                Gdx.app.log("MapGenerator", "key at " + keyPoint.x + ":" + keyPoint.y
+                        + " (" + (keyCandidates.size() + 1) + " candidates before pick)");
+            } else {
+                Gdx.app.error("MapGenerator", "no key candidates — key not placed");
             }
 
             Gdx.app.log("MapGenerator", "generated level with seed " + currentSeed
@@ -259,6 +276,7 @@ public class MapGenerator {
                     if (!alreadyExists) {
                         exitPoints.add(new GridPoint2(cx, cy));
                     }
+                    keyCandidates.add(new GridPoint2(cx, cy));
                 }
 
                 {
@@ -270,6 +288,14 @@ public class MapGenerator {
             }
         }
         x++;
+    }
+
+    MapObject createKey(int cx, int cy, int width, int height, Skin skin) {
+        TiledMapTile tile = new StaticTiledMapTile(skin.getRegion("general/coin"));
+        TiledMapTileMapObject o = new TiledMapTileMapObject(tile, false, false);
+        fillBaseProperties(o, cx, cy, width, height);
+        o.getProperties().put("type", "key");
+        return o;
     }
 
     MapObject createMob(int cx, int cy, int width, int height, Skin skin) {
@@ -313,6 +339,10 @@ public class MapGenerator {
         o.getProperties().put("chase_camera",  true);
         o.getProperties().put("has_animations",  true);
         o.getProperties().put("is_squizable",  true);
+    }
+
+    private void removeCell(List<GridPoint2> cells, GridPoint2 point) {
+        cells.removeIf(p -> p.x == point.x && p.y == point.y);
     }
 
 }

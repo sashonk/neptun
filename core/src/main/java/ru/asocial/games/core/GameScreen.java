@@ -15,6 +15,9 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import ru.asocial.games.core.behaviours.EnemyBehavior;
 import ru.asocial.games.core.behaviours.MovingBehavior;
@@ -36,7 +39,15 @@ public class GameScreen extends BaseScreen {
     private Stage hud;
     private Label playerCoors;
     private Label exitCoors;
+    private Label keyCoors;
     private EntityPanel entityPanel;
+
+    private LevelState levelState;
+    private int levelNumber;
+    private int keySpawnX = -1;
+    private int keySpawnY = -1;
+    private Group levelCompleteOverlay;
+    private boolean levelCompleteShowing;
 
     private EntityMatrix entityMatrix;
 
@@ -78,7 +89,13 @@ public class GameScreen extends BaseScreen {
         entityPanel = null;
         playerCoors = null;
         exitCoors = null;
+        keyCoors = null;
         metricsLabel = null;
+        levelState = null;
+        levelCompleteOverlay = null;
+        levelCompleteShowing = false;
+        keySpawnX = -1;
+        keySpawnY = -1;
         mapLoaded = false;
     }
 
@@ -105,6 +122,12 @@ public class GameScreen extends BaseScreen {
             public void playerPlaced(int x, int y) {
                 playerCoors.setText("player " + x + ":" + y + " seed " + levelSeed);
             }
+
+            @Override
+            public void keyPlaced(int x, int y) {
+                keySpawnX = x;
+                keySpawnY = y;
+            }
         });
         levelSeed = mapGenerator.getCurrentSeed();
         Gdx.app.log("GameScreen", "level seed: " + levelSeed);
@@ -116,6 +139,15 @@ public class GameScreen extends BaseScreen {
     }
 
     public void setup(boolean nextLevel) {
+        if (nextLevel) {
+            levelNumber++;
+        } else if (levelNumber == 0) {
+            levelNumber = 1;
+        }
+        levelState = new LevelState(levelNumber);
+        levelCompleteShowing = false;
+        levelCompleteOverlay = null;
+
         hud = new Stage();
         hud.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         entityPanel = new EntityPanel(getResourcesManager().getSkin());
@@ -123,14 +155,17 @@ public class GameScreen extends BaseScreen {
         hud.addActor(entityPanel);
         playerCoors = new Label("n/a", getResourcesManager().getSkin());
         exitCoors = new Label("n/a", getResourcesManager().getSkin());
+        keyCoors = new Label("key: no", getResourcesManager().getSkin());
         exitCoors.setPosition(10, 10);
         playerCoors.setPosition(10, 50);
+        keyCoors.setPosition(10, 90);
         hud.addActor(playerCoors);
         hud.addActor(exitCoors);
+        hud.addActor(keyCoors);
 
         WASDPlayerController wasdController = new WASDPlayerController();
-        HUDPlayerController hudController = new HUDPlayerController(getResourcesManager().getSkin(), hud.getWidth(), hud.getHeight());
-        hudController.setPosition(hud.getWidth() / 2, 200);
+        HUDPlayerController hudController = new HUDPlayerController(
+                getResourcesManager().getSkin(), hud.getWidth(), hud.getHeight(), levelState);
         hud.addActor(hudController);
         hud.addActor(wasdController);
         hud.addListener(new InputListener(){
@@ -188,6 +223,7 @@ public class GameScreen extends BaseScreen {
             if (object.getProperties().get(PropertyKeys.ATTACH_CONTROLLER, false, Boolean.class)) {
                 PlayerBehavior behavior = new PlayerBehavior(layers);
                 behavior.setController(new CombinedPlayerController(hudController, wasdController));
+                behavior.setLevelState(levelState);
                 FileHandle movesFile = Gdx.files.absolute("D:\\work\\moves.txt");
                 behavior.setMoveCallback(move -> movesFile.writeString(move.toString() + "\r\n", true));
                 entity.addBehaviour(behavior);
@@ -291,6 +327,10 @@ public class GameScreen extends BaseScreen {
                     }
                     playGolemCaptureDeath(player, playerKilledEvent.getKiller());
                 }
+                else if (event instanceof LevelCompleteEvent) {
+                    LevelCompleteEvent levelCompleteEvent = (LevelCompleteEvent) event;
+                    showLevelCompleteOverlay(levelCompleteEvent.getLevelNumber());
+                }
                 else if (event instanceof PlaceBombEvent) {
                     PlaceBombEvent placeBombEvent = (PlaceBombEvent) event;
                     Entity e = (Entity) placeBombEvent.getTarget();
@@ -320,6 +360,70 @@ public class GameScreen extends BaseScreen {
 
         mapLoaded = true;
 
+    }
+
+    private void showLevelCompleteOverlay(int completedLevel) {
+        if (levelCompleteShowing || hud == null) {
+            return;
+        }
+        levelCompleteShowing = true;
+
+        levelCompleteOverlay = new Group();
+        levelCompleteOverlay.setSize(hud.getWidth(), hud.getHeight());
+        levelCompleteOverlay.setTouchable(Touchable.enabled);
+
+        Table table = new Table(getResourcesManager().getSkin());
+        table.setFillParent(true);
+        table.setTouchable(Touchable.enabled);
+
+        Label title = new Label("Level " + completedLevel + " complete", getResourcesManager().getSkin());
+        title.setFontScale(1.5f);
+
+        TextButton continueButton = new TextButton("Continue", getResourcesManager().getSkin());
+        continueButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                continueToNextLevel();
+            }
+        });
+
+        table.add(title).padBottom(24).row();
+        table.add(continueButton).width(220).height(56);
+
+        levelCompleteOverlay.addActor(table);
+        hud.addActor(levelCompleteOverlay);
+        levelCompleteOverlay.toFront();
+
+        levelCompleteOverlay.addAction(Actions.sequence(
+                Actions.delay(2f),
+                Actions.run(this::continueToNextLevel)
+        ));
+    }
+
+    private void continueToNextLevel() {
+        if (!levelCompleteShowing) {
+            return;
+        }
+        levelCompleteShowing = false;
+        if (levelCompleteOverlay != null) {
+            levelCompleteOverlay.clearActions();
+            levelCompleteOverlay.remove();
+            levelCompleteOverlay = null;
+        }
+        restart(true);
+    }
+
+    private void updateKeyLabel() {
+        if (keyCoors == null || levelState == null) {
+            return;
+        }
+        if (levelState.hasKey()) {
+            keyCoors.setText("key: yes");
+        } else if (keySpawnX >= 0) {
+            keyCoors.setText("key: no @ " + keySpawnX + ":" + keySpawnY);
+        } else {
+            keyCoors.setText("key: no");
+        }
     }
 
     private void playGolemCaptureDeath(Entity player, Entity golem) {
@@ -555,7 +659,11 @@ public class GameScreen extends BaseScreen {
             hud.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
             frameProfiler.beginHud();
-            hud.act();
+            if (levelState != null) {
+                levelState.act(delta);
+            }
+            updateKeyLabel();
+            hud.act(delta);
             if (metricsEnabled && metricsLabel != null) {
                 layoutMetricsLabel();
                 metricsLabel.setText(frameProfiler.formatOverlay());

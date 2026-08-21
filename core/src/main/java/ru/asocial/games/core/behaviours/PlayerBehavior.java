@@ -3,13 +3,16 @@ package ru.asocial.games.core.behaviours;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.asocial.games.core.*;
+import ru.asocial.games.core.events.LevelCompleteEvent;
 import ru.asocial.games.core.events.PlaceBombEvent;
-import ru.asocial.games.core.events.RestartEvent;
 
 public class PlayerBehavior extends MovingBehavior{
 
     private IPlayerController controller;
+    private LevelState levelState;
+    private boolean wasBombPressed;
 
     public PlayerBehavior(Layers layers) {
         super(layers);
@@ -17,6 +20,10 @@ public class PlayerBehavior extends MovingBehavior{
 
     public void setController(IPlayerController controller) {
         this.controller = controller;
+    }
+
+    public void setLevelState(LevelState levelState) {
+        this.levelState = levelState;
     }
 
     protected Vector2 doFindNextMove() {
@@ -43,19 +50,12 @@ public class PlayerBehavior extends MovingBehavior{
     public void act(Entity entity, float delta) {
         super.act(entity, delta);
 
-        if (controller != null && controller.isBombPressed()) {
-            Float bombRegenTime =  entity.getPropertyOrDefault("bomb_regen_time", Float.class, 0f);
-            if (bombRegenTime <= 0) {
-                entity.putProperty("bomb_regen_time", 3f);
-                String orientation = entity.getProperty(PropertyKeys.ORIENTATION, String.class);
-                entity.fire(new PlaceBombEvent());
-            }
+        boolean bombPressed = controller != null && controller.isBombPressed();
+        if (bombPressed && !wasBombPressed && levelState != null && levelState.canPlaceBomb()) {
+            levelState.onBombPlaced();
+            entity.fire(new PlaceBombEvent());
         }
-
-        Float bombRegenTime = entity.getPropertyOrDefault("bomb_regen_time", Float.class, 0f);
-        if (bombRegenTime > 0) {
-            entity.putProperty("bomb_regen_time", bombRegenTime - delta);
-        }
+        wasBombPressed = bombPressed;
     }
 
     @Override
@@ -88,8 +88,22 @@ public class PlayerBehavior extends MovingBehavior{
 
             Entity e = getObjectAtCell(cx, cy);
             if (e != null && !isActing) {
-                if ("exit".equals(e.getProperty(PropertyKeys.TYPE, String.class))) {
-                    e.getStage().getRoot().fire(new RestartEvent(entity, true));
+                String objectType = e.getProperty(PropertyKeys.TYPE, String.class);
+                if ("key".equals(objectType)) {
+                    if (levelState != null) {
+                        levelState.setHasKey(true);
+                    }
+                    freeObject(e);
+                    e.addAction(Actions.removeActor());
+                    return move.cpy();
+                }
+                if ("exit".equals(objectType)) {
+                    if (levelState == null || !levelState.hasKey()) {
+                        return null;
+                    }
+                    int levelNumber = levelState != null ? levelState.getLevelNumber() : 1;
+                    e.getStage().getRoot().fire(new LevelCompleteEvent(entity, levelNumber));
+                    return null;
                 }
 
                 if (move.y == 0 && e.getPropertyOrDefault(PropertyKeys.CAN_ROLL, Boolean.class, false) && !e.getPropertyOrDefault(PropertyKeys.IS_ROLLING, Boolean.class, false)) {

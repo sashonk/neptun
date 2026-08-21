@@ -1,14 +1,16 @@
 Ближайшие задачи (5–10). Детали и идеи — docs/IDEAS.md
 
-1. start menu
-2. ключ → дверь (P1, см. IDEAS.md)
-3. чеклист целей в HUD (P1)
-4. labels for control buttons
-5. bomb button: icon + disable + countdown until next bomb
-6. экран «уровень пройден» вместо мгновенного рестарта
-7. убить всех големов как условие exit (P1)
-8. build dungeon maker for android
+1. чеклист целей в HUD (P1) — ☐ ключ ☐ големы ☐ exit
+2. labels for control buttons
+3. убить всех големов как условие exit (P1)
+4. build dungeon maker for android
+5. скрыть HUD-контролы на desktop (WASD-only)
 
 Сделано:
 - RND fixed seed / restart same level after death
 - metrics flag sync, draw culling, maps 150/300
+- start menu (Splash → Menu → Game)
+- ключ → дверь (exit без ключа не проходим)
+- LevelState: 3 бомбы на уровень, кулдаун 3 сек, сброс при любом рестарте
+- HUD: D-pad слева внизу, бомба справа, иконка bomb/bomb, disable + countdown
+- экран «уровень пройден» перед следующим уровнем

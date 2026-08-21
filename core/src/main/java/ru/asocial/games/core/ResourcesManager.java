@@ -5,8 +5,10 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
 public class ResourcesManager {
 
@@ -41,7 +43,16 @@ public class ResourcesManager {
 
         skin.add("default", defaultLabelStyle);
 
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = bitmapFont;
+        buttonStyle.fontColor = Color.WHITE;
+        buttonStyle.downFontColor = Color.LIGHT_GRAY;
+        skin.add("default", buttonStyle);
+
         skin.addRegions(getAtlas());
+        if (getAtlas().findRegion("bomb/bomb") != null) {
+            skin.add("bomb_icon", new TextureRegion(getAtlas().findRegion("bomb/bomb")));
+        }
     }
 
     public Skin getSkin() {

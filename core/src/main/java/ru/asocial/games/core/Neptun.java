@@ -91,7 +91,7 @@ public class Neptun extends Game implements IGame{
 	public void onLoad() {
 		Screen exaustedScreen = super.getScreen();
 		exaustedScreen.dispose();
-		setScreen(new GameScreen(this));
+		setScreen(new MenuScreen(this));
 	}
 
 }
